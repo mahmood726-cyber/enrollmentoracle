@@ -1,10 +1,12 @@
 """Advanced statistical engine for EnrollmentOracle.
 
-11 methods across two layers:
+17 methods across three layers:
   Layer 1 (publication-essential): bootstrap CI, calibration slope,
     learning curves, DeLong test, SMOTE, hyperparameter tuning.
   Layer 2 (methodologically novel): competing risks, conformal prediction,
     tree SHAP, Bayesian model averaging, survival prediction.
+  Layer 3 (advanced): partial dependence, isotonic calibration,
+    jackknife+, fairness metrics, PIT histogram, ensemble diversity.
 """
 
 import math
@@ -917,3 +919,418 @@ def _concordance_index(y_true, y_pred):
     if total == 0:
         return 0.5
     return (concordant + 0.5 * tied) / total
+
+
+# ===================================================================
+#  Layer 3 --- Advanced Statistical Methods (6 methods)
+# ===================================================================
+
+
+# 12. Partial Dependence Plots ------------------------------------------
+
+def partial_dependence(model, X, feature_idx, feature_names=None,
+                       grid_resolution=50):
+    """Partial Dependence Plot (PDP) + Individual Conditional Expectation.
+
+    Args:
+        model: trained classifier with predict_proba.
+        X: 2-D feature array (n_samples, n_features).
+        feature_idx: integer index of the feature to inspect.
+        feature_names: optional list of feature names.
+        grid_resolution: number of grid points for continuous features.
+
+    Returns:
+        dict with feature_name, grid_values, pdp_values, ice_lines.
+    """
+    X = np.asarray(X, dtype=np.float64)
+    n_samples, n_features = X.shape
+
+    if feature_names is None:
+        feature_names = [f"feature_{i}" for i in range(n_features)]
+
+    feature_name = feature_names[feature_idx]
+
+    # Determine grid values
+    unique_vals = np.unique(X[:, feature_idx])
+    if len(unique_vals) <= grid_resolution:
+        grid_values = unique_vals
+    else:
+        grid_values = np.linspace(
+            float(np.min(X[:, feature_idx])),
+            float(np.max(X[:, feature_idx])),
+            grid_resolution,
+        )
+
+    prob_col = 1 if model.predict_proba(X[:1]).shape[1] > 1 else 0
+
+    pdp_values = np.zeros(len(grid_values), dtype=np.float64)
+    ice_lines = np.zeros((n_samples, len(grid_values)), dtype=np.float64)
+
+    for g_idx, g in enumerate(grid_values):
+        X_modified = X.copy()
+        X_modified[:, feature_idx] = g
+        probs = model.predict_proba(X_modified)[:, prob_col]
+        pdp_values[g_idx] = float(np.mean(probs))
+        ice_lines[:, g_idx] = probs
+
+    return {
+        "feature_name": feature_name,
+        "grid_values": grid_values.tolist(),
+        "pdp_values": pdp_values.tolist(),
+        "ice_lines": ice_lines,
+    }
+
+
+# 13. Isotonic Regression Calibration -----------------------------------
+
+def isotonic_calibration(y_true, y_pred_proba):
+    """Non-parametric isotonic calibration of predicted probabilities.
+
+    Args:
+        y_true: binary array of true labels.
+        y_pred_proba: predicted probabilities.
+
+    Returns:
+        dict with calibrated_probs, isotonic_fit, brier_before, brier_after.
+    """
+    from sklearn.isotonic import IsotonicRegression
+
+    y_true = np.asarray(y_true, dtype=np.float64)
+    y_pred_proba = np.asarray(y_pred_proba, dtype=np.float64)
+
+    brier_before = float(brier_score_loss(y_true, y_pred_proba))
+
+    ir = IsotonicRegression(out_of_bounds='clip')
+    ir.fit(y_pred_proba, y_true)
+    calibrated = ir.predict(y_pred_proba)
+    calibrated = np.clip(calibrated, 0.0, 1.0)
+
+    brier_after = float(brier_score_loss(y_true, calibrated))
+
+    return {
+        "calibrated_probs": calibrated.tolist(),
+        "isotonic_fit": ir,
+        "brier_before": brier_before,
+        "brier_after": brier_after,
+    }
+
+
+# 14. Jackknife+ Prediction Intervals -----------------------------------
+
+def jackknife_plus(model_class, X, y, alpha=0.10, seed=42):
+    """Jackknife+ conformal prediction intervals (leave-one-out).
+
+    Args:
+        model_class: callable that returns a fresh untrained classifier.
+        X: 2-D feature array.
+        y: 1-D binary label array.
+        alpha: miscoverage rate (default 0.10 -> 90% intervals).
+        seed: random seed (unused but kept for API consistency).
+
+    Returns:
+        dict with predictions [{index, point, lower, upper}],
+        coverage, mean_width.
+    """
+    X = np.asarray(X, dtype=np.float64)
+    y = np.asarray(y, dtype=np.int32)
+    n = len(y)
+
+    residuals = np.zeros(n, dtype=np.float64)
+    p_hat = np.zeros(n, dtype=np.float64)
+
+    for i in range(n):
+        mask = np.ones(n, dtype=bool)
+        mask[i] = False
+        X_train, y_train = X[mask], y[mask]
+
+        # Need both classes in training set
+        if len(np.unique(y_train)) < 2:
+            # Fallback: train on full data
+            model_i = model_class()
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                model_i.fit(X, y)
+        else:
+            model_i = model_class()
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                model_i.fit(X_train, y_train)
+
+        probs_i = model_i.predict_proba(X[i:i+1])
+        prob_col = 1 if probs_i.shape[1] > 1 else 0
+        p_hat[i] = float(probs_i[0, prob_col])
+        residuals[i] = abs(float(y[i]) - p_hat[i])
+
+    # Quantile of residuals for interval width
+    q = float(np.quantile(residuals, 1.0 - alpha))
+
+    predictions = []
+    covered = 0
+    total_width = 0.0
+
+    for i in range(n):
+        lower = max(0.0, p_hat[i] - q)
+        upper = min(1.0, p_hat[i] + q)
+        width = upper - lower
+        total_width += width
+
+        # Check coverage
+        if lower <= float(y[i]) <= upper:
+            covered += 1
+
+        predictions.append({
+            "index": i,
+            "point": float(p_hat[i]),
+            "lower": float(lower),
+            "upper": float(upper),
+        })
+
+    coverage = covered / n if n > 0 else 0.0
+    mean_width = total_width / n if n > 0 else 0.0
+
+    return {
+        "predictions": predictions,
+        "coverage": float(coverage),
+        "mean_width": float(mean_width),
+    }
+
+
+# 15. Fairness Metrics --------------------------------------------------
+
+def fairness_metrics(y_true, y_pred, y_pred_proba, sensitive_groups):
+    """Compute fairness metrics across sensitive groups.
+
+    Args:
+        y_true: binary array of true labels.
+        y_pred: binary array of predicted labels.
+        y_pred_proba: predicted probabilities.
+        sensitive_groups: list of group labels (e.g., sponsor type).
+
+    Returns:
+        dict with demographic_parity, equalized_odds,
+        calibration_by_group, disparate_impact_ratio.
+    """
+    y_true = np.asarray(y_true, dtype=np.int32)
+    y_pred = np.asarray(y_pred, dtype=np.int32)
+    y_pred_proba = np.asarray(y_pred_proba, dtype=np.float64)
+    groups = np.array(sensitive_groups)
+
+    unique_groups = sorted(set(sensitive_groups))
+
+    # Demographic parity: P(Y_hat=1 | group=g)
+    demographic_parity = {}
+    for g in unique_groups:
+        mask = groups == g
+        if np.sum(mask) > 0:
+            demographic_parity[g] = float(np.mean(y_pred[mask]))
+        else:
+            demographic_parity[g] = 0.0
+
+    # Equalized odds: TPR and FPR per group
+    equalized_odds = {}
+    for g in unique_groups:
+        mask = groups == g
+        y_t = y_true[mask]
+        y_p = y_pred[mask]
+        pos = np.sum(y_t == 1)
+        neg = np.sum(y_t == 0)
+        tpr = float(np.sum((y_p == 1) & (y_t == 1)) / pos) if pos > 0 else 0.0
+        fpr = float(np.sum((y_p == 1) & (y_t == 0)) / neg) if neg > 0 else 0.0
+        equalized_odds[g] = {"tpr": tpr, "fpr": fpr}
+
+    # Calibration by group: Brier score, mean predicted, mean actual
+    calibration_by_group = {}
+    for g in unique_groups:
+        mask = groups == g
+        if np.sum(mask) > 0:
+            y_t = y_true[mask]
+            p = y_pred_proba[mask]
+            brier = float(brier_score_loss(y_t, p)) if len(np.unique(y_t)) > 0 else 0.0
+            calibration_by_group[g] = {
+                "brier": brier,
+                "mean_pred": float(np.mean(p)),
+                "mean_actual": float(np.mean(y_t)),
+            }
+        else:
+            calibration_by_group[g] = {
+                "brier": 0.0, "mean_pred": 0.0, "mean_actual": 0.0,
+            }
+
+    # Disparate impact ratio: min(rate) / max(rate)
+    rates = [v for v in demographic_parity.values() if v > 0]
+    if len(rates) >= 2:
+        disparate_impact_ratio = float(min(rates) / max(rates))
+    elif len(rates) == 1:
+        disparate_impact_ratio = 1.0
+    else:
+        disparate_impact_ratio = 0.0
+
+    return {
+        "demographic_parity": demographic_parity,
+        "equalized_odds": equalized_odds,
+        "calibration_by_group": calibration_by_group,
+        "disparate_impact_ratio": disparate_impact_ratio,
+    }
+
+
+# 16. Probability Integral Transform (PIT) Histogram --------------------
+
+def pit_histogram(y_true, y_pred_proba, n_bins=10, seed=42):
+    """PIT histogram for assessing probabilistic calibration.
+
+    Uses randomized PIT for binary outcomes (Czado et al. 2009):
+      PIT_i ~ Uniform(F(y_i - 1), F(y_i))
+    For binary: F(0) = 1 - p, F(1) = 1.
+      y=0: PIT ~ Uniform(0, 1-p)
+      y=1: PIT ~ Uniform(1-p, 1)
+
+    A well-calibrated model produces a uniform PIT distribution.
+
+    Args:
+        y_true: binary array.
+        y_pred_proba: predicted P(Y=1).
+        n_bins: number of histogram bins.
+        seed: random seed for randomized PIT.
+
+    Returns:
+        dict with bin_edges, bin_counts, chi2_stat, p_value, is_uniform.
+    """
+    y_true = np.asarray(y_true, dtype=np.int32)
+    y_pred_proba = np.asarray(y_pred_proba, dtype=np.float64)
+    n = len(y_true)
+
+    rng = np.random.RandomState(seed)
+    u = rng.rand(n)
+
+    # Randomized PIT for binary outcomes
+    # y=0: PIT in [0, 1-p], so PIT = u * (1-p)
+    # y=1: PIT in [1-p, 1], so PIT = (1-p) + u * p
+    pit = np.where(
+        y_true == 1,
+        (1.0 - y_pred_proba) + u * y_pred_proba,
+        u * (1.0 - y_pred_proba),
+    )
+    pit = np.clip(pit, 0.0, 1.0)
+
+    # Histogram
+    bin_counts, bin_edges = np.histogram(pit, bins=n_bins, range=(0.0, 1.0))
+
+    # Chi-squared goodness-of-fit against uniform
+    expected = n / n_bins
+    if expected > 0:
+        chi2_stat = float(np.sum((bin_counts - expected) ** 2 / expected))
+        df = n_bins - 1
+        p_value = float(1.0 - sp_stats.chi2.cdf(chi2_stat, df))
+    else:
+        chi2_stat = 0.0
+        p_value = 1.0
+
+    return {
+        "bin_edges": bin_edges.tolist(),
+        "bin_counts": bin_counts.tolist(),
+        "chi2_stat": chi2_stat,
+        "p_value": p_value,
+        "is_uniform": p_value > 0.05,
+    }
+
+
+# 17. Ensemble Diversity Metrics ----------------------------------------
+
+def ensemble_diversity(models, X, y):
+    """Compute pairwise and aggregate diversity metrics for an ensemble.
+
+    Args:
+        models: list of trained classifiers with predict.
+        X: 2-D feature array.
+        y: 1-D binary label array.
+
+    Returns:
+        dict with disagreement_measure, double_fault, q_statistic,
+        kappa_statistic, entropy_measure.
+    """
+    X = np.asarray(X, dtype=np.float64)
+    y = np.asarray(y, dtype=np.int32)
+    n = len(y)
+    n_models = len(models)
+
+    if n_models < 2:
+        return {
+            "disagreement_measure": 0.0,
+            "double_fault": 0.0,
+            "q_statistic": 0.0,
+            "kappa_statistic": 0.0,
+            "entropy_measure": 0.0,
+        }
+
+    # Get binary predictions from all models
+    preds = np.zeros((n_models, n), dtype=np.int32)
+    for m_idx, model in enumerate(models):
+        preds[m_idx] = (model.predict_proba(X)[:, 1] >= 0.5).astype(np.int32)
+
+    # Correctness matrix: 1 if prediction matches true label
+    correct = np.zeros((n_models, n), dtype=np.int32)
+    for m_idx in range(n_models):
+        correct[m_idx] = (preds[m_idx] == y).astype(np.int32)
+
+    # Pairwise metrics
+    pair_disagreement = []
+    pair_double_fault = []
+    pair_q = []
+    pair_kappa = []
+
+    for i in range(n_models):
+        for j in range(i + 1, n_models):
+            # Contingency table
+            n11 = int(np.sum((correct[i] == 1) & (correct[j] == 1)))
+            n10 = int(np.sum((correct[i] == 1) & (correct[j] == 0)))
+            n01 = int(np.sum((correct[i] == 0) & (correct[j] == 1)))
+            n00 = int(np.sum((correct[i] == 0) & (correct[j] == 0)))
+
+            # Disagreement: fraction where models disagree on correctness
+            disagree = (n10 + n01) / n if n > 0 else 0.0
+            pair_disagreement.append(disagree)
+
+            # Double fault: fraction where both are wrong
+            df = n00 / n if n > 0 else 0.0
+            pair_double_fault.append(df)
+
+            # Q-statistic
+            denom_q = n11 * n00 + n01 * n10
+            if denom_q > 0:
+                q_val = (n11 * n00 - n01 * n10) / denom_q
+            else:
+                q_val = 0.0
+            pair_q.append(q_val)
+
+            # Kappa
+            observed_agreement = (n11 + n00) / n if n > 0 else 0.0
+            p1 = (n11 + n10) / n if n > 0 else 0.0
+            p2 = (n11 + n01) / n if n > 0 else 0.0
+            expected_agreement = p1 * p2 + (1 - p1) * (1 - p2)
+            if abs(1 - expected_agreement) > 1e-10:
+                kappa_val = (observed_agreement - expected_agreement) / \
+                    (1 - expected_agreement)
+            else:
+                kappa_val = 0.0
+            pair_kappa.append(kappa_val)
+
+    # Entropy measure: mean over samples
+    # E(x) = 1 - max(votes_for_class) / n_models
+    entropy_vals = np.zeros(n, dtype=np.float64)
+    for s in range(n):
+        votes = preds[:, s]
+        vote_counts = np.bincount(votes, minlength=2)
+        max_votes = np.max(vote_counts)
+        entropy_vals[s] = 1.0 - max_votes / n_models
+
+    return {
+        "disagreement_measure": float(np.mean(pair_disagreement))
+            if pair_disagreement else 0.0,
+        "double_fault": float(np.mean(pair_double_fault))
+            if pair_double_fault else 0.0,
+        "q_statistic": float(np.mean(pair_q))
+            if pair_q else 0.0,
+        "kappa_statistic": float(np.mean(pair_kappa))
+            if pair_kappa else 0.0,
+        "entropy_measure": float(np.mean(entropy_vals)),
+    }

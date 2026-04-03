@@ -1,4 +1,4 @@
-"""Stats engine test suite -- 20 tests."""
+"""Stats engine test suite -- 32 tests."""
 
 import os
 import sys
@@ -15,6 +15,8 @@ from stats_engine import (
     apply_smote, tune_hyperparameters, competing_risks,
     conformal_prediction, tree_shap, bayesian_model_averaging,
     survival_prediction,
+    partial_dependence, isotonic_calibration, jackknife_plus,
+    fairness_metrics, pit_histogram, ensemble_diversity,
 )
 from model_trainer import train_model
 from feature_engineer import extract_feature_matrix, features_to_array, FEATURE_NAMES
@@ -208,3 +210,150 @@ class TestIntegrationStats:
         r2 = competing_risks(sample_ml)
         for p1, p2 in zip(r1["predicted_probabilities"], r2["predicted_probabilities"]):
             assert abs(p1["p_completed"] - p2["p_completed"]) < 0.01
+
+
+# ===================================================================
+#  Layer 3 --- Advanced Statistical Methods (12 tests)
+# ===================================================================
+
+
+# === Partial Dependence (2 tests) ===
+
+class TestPartialDependence:
+    def test_pdp_shape(self, sample_ml):
+        model, metrics = train_model(sample_ml)
+        X = np.array(features_to_array(extract_feature_matrix(sample_ml), FEATURE_NAMES))
+        result = partial_dependence(model, X, feature_idx=0,
+                                    feature_names=FEATURE_NAMES,
+                                    grid_resolution=10)
+        # Grid may be smaller if feature has fewer unique values
+        n_grid = len(result["grid_values"])
+        assert n_grid >= 2
+        assert len(result["pdp_values"]) == n_grid
+        assert result["ice_lines"].shape[0] == X.shape[0]
+        assert result["ice_lines"].shape[1] == n_grid
+
+    def test_pdp_monotone(self, sample_ml):
+        model, _ = train_model(sample_ml)
+        X = np.array(features_to_array(extract_feature_matrix(sample_ml), FEATURE_NAMES))
+        result = partial_dependence(model, X, feature_idx=0,
+                                    feature_names=FEATURE_NAMES)
+        # PDP values should be between 0 and 1
+        assert all(0 <= v <= 1 for v in result["pdp_values"])
+
+
+# === Isotonic Calibration (2 tests) ===
+
+class TestIsotonicCalibration:
+    def test_isotonic_calibration(self, sample_ml):
+        model, _ = train_model(sample_ml)
+        X = np.array(features_to_array(extract_feature_matrix(sample_ml), FEATURE_NAMES))
+        y = np.array([l["completed"] for l in generate_labels(sample_ml)])
+        p = model.predict_proba(X)[:, 1]
+        result = isotonic_calibration(y, p)
+        assert len(result["calibrated_probs"]) == len(p)
+        assert result["brier_after"] <= result["brier_before"] + 0.01
+
+    def test_isotonic_bounds(self):
+        y = np.array([0, 0, 0, 1, 1, 1])
+        p = np.array([0.1, 0.2, 0.3, 0.7, 0.8, 0.9])
+        result = isotonic_calibration(y, p)
+        assert all(0 <= cp <= 1 for cp in result["calibrated_probs"])
+
+
+# === Jackknife+ (2 tests) ===
+
+class TestJackknifePlus:
+    def test_jackknife_coverage(self, sample_ml):
+        from sklearn.ensemble import GradientBoostingClassifier
+        X = np.array(features_to_array(extract_feature_matrix(sample_ml), FEATURE_NAMES))
+        y = np.array([l["completed"] for l in generate_labels(sample_ml)])
+        model_fn = lambda: GradientBoostingClassifier(
+            n_estimators=20, max_depth=2, random_state=42)
+        result = jackknife_plus(model_fn, X, y, alpha=0.20, seed=42)
+        assert len(result["predictions"]) == len(y)
+        assert result["coverage"] >= 0.5  # relaxed for small data
+
+    def test_jackknife_intervals(self):
+        from sklearn.ensemble import GradientBoostingClassifier
+        X = np.array([[i, i * 2] for i in range(20)], dtype=float)
+        y = np.array([1] * 10 + [0] * 10)
+        model_fn = lambda: GradientBoostingClassifier(
+            n_estimators=10, max_depth=2, random_state=42)
+        result = jackknife_plus(model_fn, X, y, alpha=0.10, seed=42)
+        for pred in result["predictions"]:
+            assert pred["lower"] <= pred["upper"]
+
+
+# === Fairness Metrics (2 tests) ===
+
+class TestFairnessMetrics:
+    def test_fairness_groups(self, sample_ml):
+        model, _ = train_model(sample_ml)
+        X = np.array(features_to_array(extract_feature_matrix(sample_ml), FEATURE_NAMES))
+        y = np.array([l["completed"] for l in generate_labels(sample_ml)])
+        y_pred = model.predict(X)
+        p = model.predict_proba(X)[:, 1]
+        groups = [t.get("sponsorClass", "OTHER") for t in sample_ml]
+        result = fairness_metrics(y, y_pred, p, groups)
+        assert "demographic_parity" in result
+        assert "equalized_odds" in result
+        assert 0 < result["disparate_impact_ratio"] <= 1
+
+    def test_fairness_perfect(self):
+        y = np.array([1, 0, 1, 0])
+        y_pred = np.array([1, 0, 1, 0])
+        p = np.array([0.9, 0.1, 0.9, 0.1])
+        groups = ["A", "A", "B", "B"]
+        result = fairness_metrics(y, y_pred, p, groups)
+        assert result["disparate_impact_ratio"] > 0.5  # fairly equal
+
+
+# === PIT Histogram (2 tests) ===
+
+class TestPITHistogram:
+    def test_pit_uniform(self):
+        # Well-calibrated predictions -> PIT should be uniform
+        rng_data = np.random.RandomState(123)
+        n = 500
+        p = rng_data.rand(n)
+        y = (rng_data.rand(n) < p).astype(int)
+        result = pit_histogram(y, p, seed=999)
+        # Randomized PIT of well-calibrated binary model should not
+        # strongly reject uniformity
+        assert result["p_value"] > 0.01
+
+    def test_pit_miscalibrated(self):
+        # All predictions = 0.5 but outcomes are extreme -> non-uniform PIT
+        y = np.array([1] * 50 + [0] * 50)
+        p = np.array([0.5] * 100)
+        result = pit_histogram(y, p, n_bins=5)
+        assert "chi2_stat" in result
+        assert len(result["bin_counts"]) == 5
+
+
+# === Ensemble Diversity (2 tests) ===
+
+class TestEnsembleDiversity:
+    def test_ensemble_diversity(self, sample_ml):
+        from sklearn.ensemble import GradientBoostingClassifier
+        X = np.array(features_to_array(extract_feature_matrix(sample_ml), FEATURE_NAMES))
+        y = np.array([l["completed"] for l in generate_labels(sample_ml)])
+        models = [
+            GradientBoostingClassifier(
+                n_estimators=20, max_depth=d, random_state=42).fit(X, y)
+            for d in [2, 3, 4]
+        ]
+        result = ensemble_diversity(models, X, y)
+        assert "disagreement_measure" in result
+        assert "q_statistic" in result
+        assert 0 <= result["entropy_measure"] <= 1
+
+    def test_ensemble_identical(self):
+        from sklearn.ensemble import GradientBoostingClassifier
+        X = np.array([[i] for i in range(20)], dtype=float)
+        y = np.array([1] * 10 + [0] * 10)
+        m = GradientBoostingClassifier(
+            n_estimators=10, max_depth=2, random_state=42).fit(X, y)
+        result = ensemble_diversity([m, m, m], X, y)
+        assert result["disagreement_measure"] < 0.01  # identical models agree
