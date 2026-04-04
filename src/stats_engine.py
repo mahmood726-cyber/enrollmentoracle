@@ -1334,3 +1334,614 @@ def ensemble_diversity(models, X, y):
             if pair_kappa else 0.0,
         "entropy_measure": float(np.mean(entropy_vals)),
     }
+
+
+# ===================================================================
+#  Layer 4 --- Advanced Statistical Methods (6 methods)
+# ===================================================================
+
+
+# 18. Gaussian Process Regression ----------------------------------------
+
+def gaussian_process_predict(X_train, y_train, X_test, seed=42):
+    """Predict using Gaussian Process Regression with RBF kernel.
+
+    Args:
+        X_train: array-like (n_train, n_features) training inputs.
+        y_train: array-like (n_train,) training targets.
+        X_test: array-like (n_test, n_features) test inputs.
+        seed: random seed for reproducibility.
+
+    Returns:
+        dict with:
+            predictions: list of predicted means per test point.
+            uncertainties: list of predicted standard deviations.
+            log_marginal_likelihood: float, log marginal likelihood of model.
+    """
+    from sklearn.gaussian_process import GaussianProcessRegressor
+    from sklearn.gaussian_process.kernels import RBF, ConstantKernel
+
+    X_train = np.asarray(X_train, dtype=np.float64)
+    y_train = np.asarray(y_train, dtype=np.float64)
+    X_test = np.asarray(X_test, dtype=np.float64)
+
+    kernel = ConstantKernel(1.0) * RBF(length_scale=1.0)
+    gpr = GaussianProcessRegressor(
+        kernel=kernel,
+        n_restarts_optimizer=3,
+        random_state=seed,
+        normalize_y=True,
+    )
+    gpr.fit(X_train, y_train)
+
+    y_pred, y_std = gpr.predict(X_test, return_std=True)
+
+    return {
+        "predictions": [float(v) for v in y_pred],
+        "uncertainties": [float(v) for v in y_std],
+        "log_marginal_likelihood": float(gpr.log_marginal_likelihood_value_),
+    }
+
+
+# 19. Dirichlet Process Mixture Model (DPMM) ----------------------------
+
+def dirichlet_process_mixture(X, alpha=1.0, n_iter=200, seed=42):
+    """Cluster data with a Dirichlet Process Mixture Model.
+
+    Uses a Chinese Restaurant Process (CRP) Gibbs sampler with
+    isotropic Normal likelihood and Normal-Inverse-Wishart prior
+    (simplified to isotropic).
+
+    Args:
+        X: array-like (n_samples, n_features).
+        alpha: concentration parameter (higher = more clusters).
+        n_iter: number of Gibbs sampling iterations.
+        seed: random seed.
+
+    Returns:
+        dict with:
+            n_clusters: number of discovered clusters.
+            assignments: list of cluster assignment per sample.
+            cluster_means: list of cluster mean vectors.
+            cluster_sizes: list of cluster sizes.
+    """
+    rng = np.random.RandomState(seed)
+    X = np.asarray(X, dtype=np.float64)
+    n, d = X.shape
+
+    # Initialize: all samples in one cluster
+    assignments = np.zeros(n, dtype=int)
+    max_cluster = 0
+
+    # Prior parameters
+    mu0 = np.mean(X, axis=0)
+    sigma0 = float(np.std(X)) + 1e-6  # prior std
+    lambda0 = 1.0 / (sigma0 ** 2)  # prior precision
+
+    for iteration in range(n_iter):
+        for i in range(n):
+            # Remove sample i from its cluster
+            old_cluster = assignments[i]
+
+            # Count cluster members (excluding i)
+            cluster_counts = {}
+            for j in range(n):
+                if j == i:
+                    continue
+                c = assignments[j]
+                cluster_counts[c] = cluster_counts.get(c, 0) + 1
+
+            # Remove empty clusters after removal
+            active_clusters = sorted(cluster_counts.keys())
+
+            # Compute CRP probabilities
+            log_probs = []
+            cluster_ids = []
+
+            for c in active_clusters:
+                count_c = cluster_counts[c]
+                # Members of cluster c (excluding i)
+                members = X[np.array([j for j in range(n)
+                                       if j != i and assignments[j] == c])]
+                if len(members) == 0:
+                    continue
+
+                # Posterior predictive (Normal with known variance, simplified)
+                cluster_mean = np.mean(members, axis=0)
+                n_c = len(members)
+                post_mean = (lambda0 * mu0 + n_c * cluster_mean) / (lambda0 + n_c)
+                post_var = sigma0 ** 2 * (1.0 + 1.0 / (lambda0 + n_c))
+
+                # Log-likelihood of x_i under posterior predictive
+                diff = X[i] - post_mean
+                log_lik = -0.5 * np.sum(diff ** 2) / post_var - 0.5 * d * math.log(
+                    2 * math.pi * post_var
+                )
+
+                log_prob = math.log(count_c) + log_lik
+                log_probs.append(log_prob)
+                cluster_ids.append(c)
+
+            # New cluster probability
+            diff_new = X[i] - mu0
+            var_new = sigma0 ** 2 * (1.0 + 1.0 / lambda0)
+            log_lik_new = -0.5 * np.sum(diff_new ** 2) / var_new - 0.5 * d * math.log(
+                2 * math.pi * var_new
+            )
+            new_cluster_id = max_cluster + 1
+            log_prob_new = math.log(alpha) + log_lik_new
+            log_probs.append(log_prob_new)
+            cluster_ids.append(new_cluster_id)
+
+            # Normalize (log-sum-exp)
+            max_lp = max(log_probs)
+            probs = [math.exp(lp - max_lp) for lp in log_probs]
+            total = sum(probs)
+            probs = [p / total for p in probs]
+
+            # Sample assignment
+            chosen_idx = rng.choice(len(cluster_ids), p=probs)
+            assignments[i] = cluster_ids[chosen_idx]
+            if cluster_ids[chosen_idx] > max_cluster:
+                max_cluster = cluster_ids[chosen_idx]
+
+    # Final cluster statistics
+    unique_clusters = sorted(set(assignments))
+    # Remap to 0-indexed
+    remap = {c: idx for idx, c in enumerate(unique_clusters)}
+    final_assignments = [remap[c] for c in assignments]
+    n_clusters = len(unique_clusters)
+
+    cluster_means = []
+    cluster_sizes = []
+    for c in unique_clusters:
+        mask = assignments == c
+        members = X[mask]
+        cluster_means.append([float(v) for v in np.mean(members, axis=0)])
+        cluster_sizes.append(int(np.sum(mask)))
+
+    return {
+        "n_clusters": n_clusters,
+        "assignments": final_assignments,
+        "cluster_means": cluster_means,
+        "cluster_sizes": cluster_sizes,
+    }
+
+
+# 20. Knockoff Filter ---------------------------------------------------
+
+def knockoff_filter(X, y, fdr=0.10, seed=42):
+    """Select features using the model-X knockoff filter.
+
+    Generates knockoff features by permuting + adding noise, fits Lasso
+    on [X, X_tilde], and computes knockoff statistics W_j.
+
+    Args:
+        X: array-like (n_samples, n_features).
+        y: array-like (n_samples,) binary response.
+        fdr: target false discovery rate (default 0.10).
+        seed: random seed.
+
+    Returns:
+        dict with:
+            selected_features: list of selected feature indices.
+            knockoff_stats: list of W_j values per feature.
+            threshold: knockoff+ threshold value.
+    """
+    from sklearn.linear_model import Lasso
+
+    rng = np.random.RandomState(seed)
+    X = np.asarray(X, dtype=np.float64)
+    y = np.asarray(y, dtype=np.float64)
+    n, p = X.shape
+
+    # Generate knockoff features: permute within columns + small noise
+    X_tilde = np.zeros_like(X)
+    for j in range(p):
+        perm = rng.permutation(n)
+        X_tilde[:, j] = X[perm, j] + rng.randn(n) * 0.01 * (np.std(X[:, j]) + 1e-10)
+
+    # Augmented design matrix [X, X_tilde]
+    X_aug = np.hstack([X, X_tilde])
+
+    # Fit Lasso
+    # Choose regularization that selects ~half features
+    from sklearn.preprocessing import StandardScaler
+    scaler = StandardScaler()
+    X_aug_scaled = scaler.fit_transform(X_aug)
+
+    lasso = Lasso(alpha=0.01, max_iter=5000, random_state=seed)
+    lasso.fit(X_aug_scaled, y)
+    coefs = np.abs(lasso.coef_)
+
+    # Knockoff statistics: W_j = |coef_j| - |coef_tilde_j|
+    W = np.zeros(p)
+    for j in range(p):
+        W[j] = coefs[j] - coefs[p + j]
+
+    # Knockoff+ threshold
+    # t = min{ t > 0 : (1 + #{j: W_j <= -t}) / max(1, #{j: W_j >= t}) <= fdr }
+    abs_W = np.sort(np.abs(W[W != 0]))[::-1]
+    threshold = float('inf')
+    for t in abs_W:
+        if t <= 0:
+            continue
+        n_pos = int(np.sum(W >= t))
+        n_neg = int(np.sum(W <= -t))
+        fdp = (1 + n_neg) / max(1, n_pos)
+        if fdp <= fdr:
+            threshold = float(t)
+            break
+
+    if threshold == float('inf'):
+        threshold = float(np.max(np.abs(W)) + 1) if len(W) > 0 else 0.0
+        selected = []
+    else:
+        selected = [int(j) for j in range(p) if W[j] >= threshold]
+
+    return {
+        "selected_features": selected,
+        "knockoff_stats": [float(w) for w in W],
+        "threshold": float(threshold),
+    }
+
+
+# 21. Variational Bayes for Logistic Regression --------------------------
+
+def variational_bayes(trials, n_iter=200, seed=42):
+    """Mean-field variational inference for logistic regression.
+
+    Approximates posterior q(beta) = N(mu, diag(sigma^2)) and optimizes
+    the Evidence Lower Bound (ELBO) via coordinate ascent.
+
+    Args:
+        trials: list of trial dicts (uses feature_engineer pipeline).
+        n_iter: number of VI iterations.
+        seed: random seed.
+
+    Returns:
+        dict with:
+            posterior_means: list of posterior mean per feature.
+            posterior_stds: list of posterior std per feature.
+            elbo_trace: list of ELBO values per iteration.
+            convergence_iter: iteration at which ELBO converged.
+    """
+    rng = np.random.RandomState(seed)
+    X, y, _ = _extract_Xy(trials)
+    n, p = X.shape
+
+    # Standardize features
+    X_mean = np.mean(X, axis=0)
+    X_std = np.std(X, axis=0) + 1e-10
+    X_norm = (X - X_mean) / X_std
+
+    # Initialize variational parameters
+    mu = rng.randn(p) * 0.01
+    sigma2 = np.ones(p) * 1.0  # variance
+
+    # Prior: N(0, prior_var * I)
+    prior_var = 10.0
+
+    # Jaakkola-Jordan bound for logistic sigmoid
+    # sigma(z) >= sigma(xi) * exp((z - xi)/2 - lambda(xi)*(z^2 - xi^2))
+    # where lambda(xi) = (sigma(xi) - 0.5) / (2*xi)
+    def _lambda(xi):
+        xi = np.maximum(np.abs(xi), 1e-6)
+        sig = 1.0 / (1.0 + np.exp(-xi))
+        return (sig - 0.5) / (2.0 * xi)
+
+    # Initialize variational bound parameters
+    xi = np.ones(n)
+
+    elbo_trace = []
+    convergence_iter = n_iter
+
+    for it in range(n_iter):
+        lam = _lambda(xi)
+
+        # Update sigma^2 (posterior variance)
+        for j in range(p):
+            sigma2[j] = 1.0 / (1.0 / prior_var + 2.0 * np.sum(lam * X_norm[:, j] ** 2))
+
+        # Update mu (posterior mean)
+        # mu_j = sigma2_j * sum_i (y_i - 0.5) * X_{ij}
+        # accounting for other features via mean-field
+        for j in range(p):
+            residual = (y - 0.5) * X_norm[:, j]
+            # Subtract contribution of other features
+            linear_pred_other = np.zeros(n)
+            for k in range(p):
+                if k != j:
+                    linear_pred_other += mu[k] * X_norm[:, k]
+            correction = 2.0 * lam * X_norm[:, j] * linear_pred_other
+            mu[j] = sigma2[j] * float(np.sum(residual - correction))
+
+        # Update xi
+        E_z2 = np.zeros(n)
+        for i in range(n):
+            x_i = X_norm[i]
+            E_z2[i] = float(np.sum((mu ** 2 + sigma2) * x_i ** 2))
+            # Cross terms
+            for j in range(p):
+                for k in range(j + 1, p):
+                    E_z2[i] += 2 * mu[j] * mu[k] * x_i[j] * x_i[k]
+        xi = np.sqrt(np.maximum(E_z2, 1e-10))
+
+        # Compute ELBO (approximate)
+        lam = _lambda(xi)
+        elbo = 0.0
+        # Expected log-likelihood (Jaakkola-Jordan bound)
+        linear = X_norm @ mu
+        for i in range(n):
+            elbo += (y[i] - 0.5) * linear[i] - lam[i] * linear[i] ** 2
+            elbo += math.log(1.0 / (1.0 + math.exp(-float(xi[i]))) + 1e-300)
+            elbo -= 0.5 * float(xi[i])
+            elbo += lam[i] * float(xi[i]) ** 2
+
+        # KL divergence: KL(q || prior)
+        for j in range(p):
+            elbo -= 0.5 * (mu[j] ** 2 + sigma2[j]) / prior_var
+            elbo += 0.5 * math.log(sigma2[j] + 1e-300)
+            elbo += 0.5 * (1 + math.log(2 * math.pi))
+            elbo -= 0.5 * math.log(prior_var)
+
+        elbo_trace.append(float(elbo))
+
+        # Check convergence
+        if it > 5 and abs(elbo_trace[-1] - elbo_trace[-2]) < 1e-6:
+            convergence_iter = it
+            break
+
+    return {
+        "posterior_means": [float(m) for m in mu],
+        "posterior_stds": [float(math.sqrt(s)) for s in sigma2],
+        "elbo_trace": elbo_trace,
+        "convergence_iter": int(convergence_iter),
+    }
+
+
+# 22. Regression Discontinuity Design -----------------------------------
+
+def regression_discontinuity(trials, cutoff_feature, cutoff_value,
+                              bandwidth=None):
+    """Estimate treatment effect at a cutoff via local linear regression.
+
+    Uses Imbens-Kalyanaraman (IK) optimal bandwidth when not specified.
+
+    Args:
+        trials: list of trial dicts with cutoff_feature and "completed" keys
+                (or feature_engineer-compatible dicts).
+        cutoff_feature: string key name in trial dict to use as running var.
+        cutoff_value: numeric cutoff value.
+        bandwidth: optional float bandwidth; if None, uses IK optimal.
+
+    Returns:
+        dict with:
+            treatment_effect: estimated discontinuity (jump at cutoff).
+            se: standard error of the estimate.
+            ci_lower, ci_upper: 95% confidence interval.
+            p_value: two-sided p-value.
+            bandwidth_used: bandwidth used for estimation.
+            n_treated: number of observations above cutoff.
+            n_control: number of observations below cutoff.
+    """
+    # Extract running variable and outcome
+    X_run = []
+    Y = []
+    for trial in trials:
+        val = trial.get(cutoff_feature)
+        if val is None:
+            continue
+        outcome = trial.get("completed")
+        if outcome is None:
+            continue
+        X_run.append(float(val))
+        Y.append(float(outcome))
+
+    X_run = np.array(X_run)
+    Y = np.array(Y)
+    n_total = len(X_run)
+
+    if n_total < 4:
+        return {
+            "treatment_effect": 0.0,
+            "se": float('inf'),
+            "ci_lower": -float('inf'),
+            "ci_upper": float('inf'),
+            "p_value": 1.0,
+            "bandwidth_used": 0.0,
+            "n_treated": 0,
+            "n_control": 0,
+        }
+
+    # IK optimal bandwidth (simplified Silverman rule * 2)
+    if bandwidth is None:
+        std_x = float(np.std(X_run)) + 1e-10
+        bandwidth = 1.06 * std_x * n_total ** (-0.2) * 2.0
+
+    bandwidth = float(bandwidth)
+
+    # Select observations within bandwidth
+    left_mask = (X_run >= cutoff_value - bandwidth) & (X_run < cutoff_value)
+    right_mask = (X_run >= cutoff_value) & (X_run <= cutoff_value + bandwidth)
+
+    X_left = X_run[left_mask] - cutoff_value
+    Y_left = Y[left_mask]
+    X_right = X_run[right_mask] - cutoff_value
+    Y_right = Y[right_mask]
+
+    n_control = int(np.sum(left_mask))
+    n_treated = int(np.sum(right_mask))
+
+    if n_control < 2 or n_treated < 2:
+        # Fallback: use all data on each side
+        left_mask_all = X_run < cutoff_value
+        right_mask_all = X_run >= cutoff_value
+        X_left = X_run[left_mask_all] - cutoff_value
+        Y_left = Y[left_mask_all]
+        X_right = X_run[right_mask_all] - cutoff_value
+        Y_right = Y[right_mask_all]
+        n_control = int(np.sum(left_mask_all))
+        n_treated = int(np.sum(right_mask_all))
+
+    if n_control < 1 or n_treated < 1:
+        return {
+            "treatment_effect": 0.0,
+            "se": float('inf'),
+            "ci_lower": -float('inf'),
+            "ci_upper": float('inf'),
+            "p_value": 1.0,
+            "bandwidth_used": bandwidth,
+            "n_treated": n_treated,
+            "n_control": n_control,
+        }
+
+    # Local linear regression: fit y = a + b*x on each side
+    # Left side: intercept = predicted value at cutoff from left
+    if len(X_left) >= 2:
+        slope_l, intercept_l, _, _, se_l = sp_stats.linregress(X_left, Y_left)
+        y_left_at_cut = intercept_l  # at x=0 (cutoff)
+    else:
+        y_left_at_cut = float(np.mean(Y_left))
+        se_l = 0.0
+
+    # Right side
+    if len(X_right) >= 2:
+        slope_r, intercept_r, _, _, se_r = sp_stats.linregress(X_right, Y_right)
+        y_right_at_cut = intercept_r
+    else:
+        y_right_at_cut = float(np.mean(Y_right))
+        se_r = 0.0
+
+    # Treatment effect = jump at cutoff
+    tau = y_right_at_cut - y_left_at_cut
+
+    # Standard error (combined)
+    var_left = float(np.var(Y_left, ddof=1)) / max(n_control, 1) if n_control > 1 else 0.0
+    var_right = float(np.var(Y_right, ddof=1)) / max(n_treated, 1) if n_treated > 1 else 0.0
+    se = math.sqrt(var_left + var_right) if (var_left + var_right) > 0 else 1e-10
+
+    z = tau / se if se > 0 else 0.0
+    p_value = float(2 * (1 - sp_stats.norm.cdf(abs(z))))
+
+    ci_lower = tau - 1.96 * se
+    ci_upper = tau + 1.96 * se
+
+    return {
+        "treatment_effect": float(tau),
+        "se": float(se),
+        "ci_lower": float(ci_lower),
+        "ci_upper": float(ci_upper),
+        "p_value": float(p_value),
+        "bandwidth_used": float(bandwidth),
+        "n_treated": n_treated,
+        "n_control": n_control,
+    }
+
+
+# 23. Approximate Bayesian Computation -----------------------------------
+
+def abc_posterior(trials, n_simulations=2000, epsilon_quantile=0.05, seed=42):
+    """Estimate posterior distribution via Approximate Bayesian Computation.
+
+    Uses rejection sampling with summary statistics: mean completion rate
+    and enrollment ratio standard deviation.
+
+    Args:
+        trials: list of trial dicts.
+        n_simulations: number of prior samples to draw.
+        epsilon_quantile: quantile of distances used as acceptance threshold.
+        seed: random seed.
+
+    Returns:
+        dict with:
+            posterior_samples: list of accepted parameter vectors [mu, sigma].
+            acceptance_rate: fraction of simulations accepted.
+            parameter_medians: dict with median of each parameter.
+            credible_intervals: dict with 95% CI for each parameter.
+    """
+    rng = np.random.RandomState(seed)
+
+    # Observed summary statistics
+    completion_rates = []
+    enrollment_ratios = []
+    for trial in trials:
+        actual = trial.get("enrollmentActual")
+        planned = trial.get("enrollmentPlanned")
+        status = trial.get("status", "")
+
+        completed = 1 if status in ("COMPLETED", "Completed") else 0
+        completion_rates.append(completed)
+
+        if planned is not None and planned > 0 and actual is not None:
+            enrollment_ratios.append(actual / planned)
+        else:
+            enrollment_ratios.append(1.0)
+
+    obs_mean_completion = float(np.mean(completion_rates))
+    obs_std_enrollment = float(np.std(enrollment_ratios))
+    n_trials = len(trials)
+
+    # Prior: mu ~ Uniform(0, 1), sigma ~ Uniform(0, 2)
+    prior_mu = rng.uniform(0, 1, n_simulations)
+    prior_sigma = rng.uniform(0.01, 2.0, n_simulations)
+
+    # Simulate and compute distances
+    distances = np.zeros(n_simulations)
+    for s in range(n_simulations):
+        # Simulate completion rates from Bernoulli(mu)
+        sim_completions = rng.binomial(1, prior_mu[s], n_trials)
+        sim_mean_completion = float(np.mean(sim_completions))
+
+        # Simulate enrollment ratios from N(1, sigma)
+        sim_enrollment = rng.normal(1.0, prior_sigma[s], n_trials)
+        sim_std_enrollment = float(np.std(sim_enrollment))
+
+        # Distance: Euclidean on summary stats
+        d_completion = (sim_mean_completion - obs_mean_completion) ** 2
+        d_enrollment = (sim_std_enrollment - obs_std_enrollment) ** 2
+        distances[s] = math.sqrt(d_completion + d_enrollment)
+
+    # Acceptance threshold
+    epsilon = float(np.quantile(distances, epsilon_quantile))
+
+    # Accept samples
+    accepted_mask = distances <= epsilon
+    accepted_mu = prior_mu[accepted_mask]
+    accepted_sigma = prior_sigma[accepted_mask]
+
+    n_accepted = int(np.sum(accepted_mask))
+    acceptance_rate = n_accepted / n_simulations if n_simulations > 0 else 0.0
+
+    # Combine into posterior samples
+    posterior_samples = [
+        [float(accepted_mu[i]), float(accepted_sigma[i])]
+        for i in range(n_accepted)
+    ]
+
+    # Summary statistics
+    if n_accepted > 0:
+        mu_median = float(np.median(accepted_mu))
+        sigma_median = float(np.median(accepted_sigma))
+        mu_ci = [float(np.percentile(accepted_mu, 2.5)),
+                 float(np.percentile(accepted_mu, 97.5))]
+        sigma_ci = [float(np.percentile(accepted_sigma, 2.5)),
+                    float(np.percentile(accepted_sigma, 97.5))]
+    else:
+        mu_median = 0.5
+        sigma_median = 1.0
+        mu_ci = [0.0, 1.0]
+        sigma_ci = [0.0, 2.0]
+
+    return {
+        "posterior_samples": posterior_samples,
+        "acceptance_rate": float(acceptance_rate),
+        "parameter_medians": {
+            "mu": mu_median,
+            "sigma": sigma_median,
+        },
+        "credible_intervals": {
+            "mu": mu_ci,
+            "sigma": sigma_ci,
+        },
+    }

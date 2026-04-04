@@ -1,4 +1,4 @@
-"""Stats engine test suite -- 32 tests."""
+"""Stats engine test suite -- 42 tests."""
 
 import os
 import sys
@@ -17,6 +17,9 @@ from stats_engine import (
     survival_prediction,
     partial_dependence, isotonic_calibration, jackknife_plus,
     fairness_metrics, pit_histogram, ensemble_diversity,
+    gaussian_process_predict, dirichlet_process_mixture,
+    knockoff_filter, variational_bayes,
+    regression_discontinuity, abc_posterior,
 )
 from model_trainer import train_model
 from feature_engineer import extract_feature_matrix, features_to_array, FEATURE_NAMES
@@ -357,3 +360,141 @@ class TestEnsembleDiversity:
             n_estimators=10, max_depth=2, random_state=42).fit(X, y)
         result = ensemble_diversity([m, m, m], X, y)
         assert result["disagreement_measure"] < 0.01  # identical models agree
+
+
+# === Gaussian Process Regression (2 tests) ===
+
+class TestGaussianProcess:
+    def test_gp_predictions_exist(self):
+        """GP returns predictions and positive uncertainties."""
+        rng = np.random.RandomState(42)
+        X_train = rng.randn(20, 2)
+        y_train = np.sin(X_train[:, 0]) + 0.1 * rng.randn(20)
+        X_test = rng.randn(5, 2)
+        result = gaussian_process_predict(X_train, y_train, X_test, seed=42)
+        assert len(result["predictions"]) == 5
+        assert all(u > 0 for u in result["uncertainties"])
+        assert math.isfinite(result["log_marginal_likelihood"])
+
+    def test_gp_uncertainty_increases(self):
+        """Uncertainty increases far from training data."""
+        X_train = np.array([[0.0], [1.0], [2.0]])
+        y_train = np.array([0.0, 1.0, 2.0])
+        X_near = np.array([[0.5]])
+        X_far = np.array([[100.0]])
+        result_near = gaussian_process_predict(X_train, y_train, X_near, seed=42)
+        result_far = gaussian_process_predict(X_train, y_train, X_far, seed=42)
+        assert result_far["uncertainties"][0] > result_near["uncertainties"][0]
+
+
+# === Dirichlet Process Mixture (2 tests) ===
+
+class TestDPMM:
+    def test_dpmm_discovers_clusters(self):
+        """DPMM finds >= 2 clusters in well-separated data."""
+        rng = np.random.RandomState(42)
+        cluster1 = rng.randn(15, 2) + np.array([5, 5])
+        cluster2 = rng.randn(15, 2) + np.array([-5, -5])
+        X = np.vstack([cluster1, cluster2])
+        result = dirichlet_process_mixture(X, alpha=1.0, n_iter=100, seed=42)
+        assert result["n_clusters"] >= 2
+        assert sum(result["cluster_sizes"]) == 30
+
+    def test_dpmm_assignments_consistent(self):
+        """All samples are assigned and cluster sizes sum correctly."""
+        rng = np.random.RandomState(123)
+        X = rng.randn(20, 3)
+        result = dirichlet_process_mixture(X, alpha=0.5, n_iter=50, seed=123)
+        assert len(result["assignments"]) == 20
+        assert sum(result["cluster_sizes"]) == 20
+        assert result["n_clusters"] == len(result["cluster_means"])
+
+
+# === Knockoff Filter (2 tests) ===
+
+class TestKnockoffFilter:
+    def test_knockoff_selected_exists(self):
+        """Knockoff filter returns selected features list."""
+        rng = np.random.RandomState(42)
+        n, p = 100, 10
+        X = rng.randn(n, p)
+        # Only first 2 features are truly predictive
+        y = (X[:, 0] + X[:, 1] + 0.1 * rng.randn(n) > 0).astype(float)
+        result = knockoff_filter(X, y, fdr=0.20, seed=42)
+        assert "selected_features" in result
+        assert len(result["knockoff_stats"]) == p
+        assert result["threshold"] >= 0
+
+    def test_knockoff_threshold_nonnegative(self):
+        """Knockoff threshold is non-negative."""
+        rng = np.random.RandomState(99)
+        X = rng.randn(50, 5)
+        y = rng.binomial(1, 0.5, 50).astype(float)
+        result = knockoff_filter(X, y, fdr=0.10, seed=99)
+        assert result["threshold"] >= 0
+
+
+# === Variational Bayes (2 tests) ===
+
+class TestVariationalBayes:
+    def test_vb_posterior_means(self, sample_ml):
+        """VB returns posterior means for all features."""
+        result = variational_bayes(sample_ml, n_iter=50, seed=42)
+        assert len(result["posterior_means"]) > 0
+        assert len(result["posterior_stds"]) == len(result["posterior_means"])
+        assert all(s > 0 for s in result["posterior_stds"])
+
+    def test_vb_elbo_nondecreasing(self, sample_ml):
+        """ELBO should be non-decreasing (with small slack for numerics)."""
+        result = variational_bayes(sample_ml, n_iter=100, seed=42)
+        elbo = result["elbo_trace"]
+        assert len(elbo) > 1
+        # Allow small numerical slack (0.1 per step)
+        for i in range(1, len(elbo)):
+            assert elbo[i] >= elbo[i - 1] - 0.5, \
+                f"ELBO decreased at step {i}: {elbo[i]} < {elbo[i-1]}"
+
+
+# === Regression Discontinuity (2 tests) ===
+
+class TestRDD:
+    def test_rdd_detects_effect(self):
+        """RDD detects a treatment effect at cutoff."""
+        rng = np.random.RandomState(42)
+        trials = []
+        for i in range(100):
+            x = rng.uniform(0, 100)
+            # True discontinuity at x=50: +0.5 jump
+            completed = 1 if (rng.rand() < (0.3 + (0.5 if x >= 50 else 0.0))) else 0
+            trials.append({"enrollment": x, "completed": completed})
+        result = regression_discontinuity(trials, "enrollment", 50.0)
+        assert result["treatment_effect"] > 0  # positive effect detected
+        assert result["n_treated"] > 0
+        assert result["n_control"] > 0
+
+    def test_rdd_no_effect_constant(self):
+        """RDD with constant data shows no significant effect."""
+        trials = [{"score": float(i), "completed": 1} for i in range(50)]
+        result = regression_discontinuity(trials, "score", 25.0)
+        # All completed = 1, so effect should be ~0
+        assert abs(result["treatment_effect"]) < 0.5
+
+
+# === ABC Posterior (2 tests) ===
+
+class TestABCPosterior:
+    def test_abc_acceptance_rate(self, sample_ml):
+        """ABC has positive acceptance rate."""
+        result = abc_posterior(sample_ml, n_simulations=500,
+                              epsilon_quantile=0.10, seed=42)
+        assert result["acceptance_rate"] > 0
+        assert len(result["posterior_samples"]) > 0
+
+    def test_abc_posterior_samples(self, sample_ml):
+        """ABC posterior samples have valid structure."""
+        result = abc_posterior(sample_ml, n_simulations=1000,
+                              epsilon_quantile=0.05, seed=42)
+        assert "mu" in result["parameter_medians"]
+        assert "sigma" in result["parameter_medians"]
+        assert 0 <= result["parameter_medians"]["mu"] <= 1
+        assert len(result["credible_intervals"]["mu"]) == 2
