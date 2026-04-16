@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EnrollmentOracle: ML Prediction of Clinical Trial Enrollment Speed from ClinicalTrials.gov Metadata
+TYPE: methods  |  ESTIMAND: Predicted enrollment duration (months, 95% prediction interval)
+DATA: ClinicalTrials.gov API v2, interventional trials 2010-2025
+PATH: C:\Models\EnrollmentOracle
+
+CURRENT BODY (139 words):
+Can machine learning predict clinical trial enrollment speed from publicly available registry metadata before a trial opens? We extracted protocol features from ClinicalTrials.gov for interventional trials registered between 2010 and 2025 across all therapeutic areas. A gradient-boosted ensemble combining site count, eligibility complexity, phase, and therapeutic area predicted enrollment duration in months with calibrated prediction intervals. The model achieved a concordance index of 0.74 (95% CI 0.71 to 0.77) on a held-out test set stratified by sponsor type and geography. SHAP analysis identified number of sites and eligibility criterion count as the two most influential predictors, each contributing over 15 percent of feature importance. The interactive dashboard enables sponsors to explore enrollment projections and identify bottleneck features before trial launch. Predictions are limited to trial types represented in the training data and cannot anticipate regulatory or pandemic-related enrollment disruptions.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/EnrollmentOracle
+  Protocol:  https://github.com/mahmood726-cyber/EnrollmentOracle/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/enrollmentoracle/
+
+References (topic pack: heterogeneity / prediction interval):
+  1. Higgins JPT, Thompson SG. 2002. Quantifying heterogeneity in a meta-analysis. Stat Med. 21(11):1539-1558. doi:10.1002/sim.1186
+  2. IntHout J, Ioannidis JP, Rovers MM, Goeman JJ. 2016. Plea for routinely presenting prediction intervals in meta-analysis. BMJ Open. 6(7):e010247. doi:10.1136/bmjopen-2015-010247
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[347/485] HTNPipeline
+TITLE: HyperAtlas: A Bayesian Hypertension Prevalence Pipeline with WHO and World Bank Data Integration
+TYPE: methods  |  ESTIMAND: National hypertension prevalence posterior mean and 95% credible interval
+DATA: WHO Global Health Observatory, World Bank WDI, 54 indicator variables across 195 countries
+PATH: C:\Models\HTNPipeline
+
+CURRENT BODY (146 words):
+Can a Bayesian hierarchical pipeline provide country-level hypertension prevalence estimates by integrating WHO and World Bank indicators? We harmonized 54 socioeconomic and health indicators from the WHO Global Health Observatory and World Bank for 195 countries from 2000 to 2024. A Gibbs sampler with conjugate priors estimated posterior distributions of national hypertension prevalence conditional on GDP, health expenditure, urbanization, and dietary risk factors. The pipeline produced prevalence estimates for 180 countries with a mean posterior width of 4.2 percentage points (95% credible interval 2.8 to 6.1) and cross-validated concordance of 0.81 against NCD-RisC benchmarks. Counterfactual analyses showed that a 10 percent increase in per-capita health expenditure was associated with a 1.3 percentage point reduction in hypertension prevalence. The interactive dashboard displays choropleth maps, counterfactual scenarios, and TruthCert-audited output bundles. Estimates depend on the completeness of WHO reporting and cannot replace direct population surveys in low-data settings.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/HTNPipeline
+  Protocol:  https://github.com/mahmood726-cyber/HTNPipeline/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/htnpipeline/
+
+References (topic pack: causal inference / triangulation):
+  1. Lawlor DA, Tilling K, Davey Smith G. 2016. Triangulation in aetiological epidemiology. Int J Epidemiol. 45(6):1866-1886. doi:10.1093/ije/dyw314
+  2. Hernán MA, Robins JM. 2016. Using big data to emulate a target trial when a randomized trial is not available. Am J Epidemiol. 183(8):758-764. doi:10.1093/aje/kwv254
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[348/485] OutcomeSwitchDetector
+TITLE: OutcomeSwitchDetector: Automated Detection of Primary Outcome Switching in ClinicalTrials.gov Protocols
+TYPE: methods  |  ESTIMAND: Outcome switching rate (proportion with 95% CI)
+DATA: ClinicalTrials.gov API v2, protocol amendment histories
+PATH: C:\Models\OutcomeSwitchDetector
+
+CURRENT BODY (134 words):
+Can automated text comparison detect primary outcome switching between clinical trial protocol versions registered on ClinicalTrials.gov? We harvested protocol amendment histories from ClinicalTrials.gov for interventional trials with at least two registered protocol versions. A diff engine with semantic endpoint parsing classified changes as additions, removals, or modifications of primary and secondary outcome measures. Across the analyzed cohort the outcome switching rate was 18.4 percent (95% CI 16.2 to 20.8) for primary endpoints, with oncology and cardiovascular trials showing the highest rates. Severity scoring weighted switches by clinical importance, with 6.1 percent classified as high-severity involving a change in the primary efficacy endpoint direction. The dashboard provides trial-level audit trails linking each detected switch to its protocol version timestamps. Detection is limited to changes captured in ClinicalTrials.gov structured fields and cannot identify unreported protocol amendments.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/OutcomeSwitchDetector
+  Protocol:  https://github.com/mahmood726-cyber/OutcomeSwitchDetector/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/outcomeswitchdetector/
+
+References (topic pack: CT.gov / ClinicalTrials.gov audit):
+  1. Zarin DA, Tse T, Williams RJ, Rajakannan T. 2017. Update on trial registration 11 years after the ICMJE policy was established. N Engl J Med. 376(4):383-391. doi:10.1056/NEJMsr1601330
+  2. Anderson ML, Chiswell K, Peterson ED, Tasneem A, Topping J, Califf RM. 2015. Compliance with results reporting at ClinicalTrials.gov. N Engl J Med. 372(11):1031-1039. doi:10.1056/NEJMsa1409364
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[349/485] ProtocolEvolution
+TITLE: ProtocolEvolution: Mapping Temporal Patterns of Clinical Trial Protocol Amendments Across Therapeutic Areas
+TYPE: methods  |  ESTIMAND: Amendment rate per trial-year (count with 95% CI)
+DATA: ClinicalTrials.gov API v2, protocol version histories 2010-2025
+PATH: C:\Models\ProtocolEvolution
+
+CURRENT BODY (137 words):
+How frequently do clinical trial protocols undergo amendments, and do amendment patterns differ systematically across therapeutic areas and trial phases? We extracted protocol version histories from ClinicalTrials.gov for interventional trials registered between 2010 and 2025 with at least one recorded amendment. A change classifier categorized amendments by type including eligibility modifications, endpoint changes, sample size adjustments, and administrative corrections. The median amendment rate was 2.3 per trial-year (95% CI 2.1 to 2.5), with phase III oncology trials showing the highest rate at 3.8 amendments per trial-year. Pattern detection identified eligibility broadening as the most common amendment type, occurring in 41 percent of amended trials within the first 12 months of enrollment. The interactive dashboard displays amendment timelines, category breakdowns, and cross-trial comparison heatmaps. Analysis is restricted to amendments recorded in ClinicalTrials.gov and underestimates true protocol change frequency.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/ProtocolEvolution
+  Protocol:  https://github.com/mahmood726-cyber/ProtocolEvolution/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/protocolevolution/
+
+References (topic pack: CT.gov / ClinicalTrials.gov audit):
+  1. Zarin DA, Tse T, Williams RJ, Rajakannan T. 2017. Update on trial registration 11 years after the ICMJE policy was established. N Engl J Med. 376(4):383-391. doi:10.1056/NEJMsr1601330
+  2. Anderson ML, Chiswell K, Peterson ED, Tasneem A, Topping J, Califf RM. 2015. Compliance with results reporting at ClinicalTrials.gov. N Engl J Med. 372(11):1031-1039. doi:10.1056/NEJMsa1409364
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[350/485] TrialAtlas
+TITLE: TrialAtlas: A Network Visualization of Global Clinical Trial Connectivity Across Sites, Sponsors, and Conditions
+TYPE: methods  |  ESTIMAND: Network centrality and community structure metrics
+DATA: ClinicalTrials.gov API v2, trial-site-sponsor network for 400K+ trials
+PATH: C:\Models\TrialAtlas
+
+CURRENT BODY (136 words):
+Can network analysis reveal the hidden connectivity structure linking clinical trial sites, sponsors, and therapeutic conditions across the global registry? We constructed a tripartite network from ClinicalTrials.gov linking trial sites, sponsors, and medical conditions for over 400,000 registered interventional studies. Community detection using Louvain modularity identified 23 distinct research clusters, with the largest cardiovascular-metabolic cluster spanning 47 countries and 2,800 unique sites. Network centrality analysis revealed that the top 50 sites by betweenness centrality participated in 12 percent of all registered trials, suggesting concentration risk in the global trial infrastructure. Geographic analysis identified 31 countries with no site appearing in any detected community, indicating research isolation. The interactive dashboard provides force-directed network visualization, community exploration, and site-level connectivity metrics. The analysis captures only ClinicalTrials.gov-registered trials and may underrepresent activity in countries that primarily use other registries.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/TrialAtlas
+  Protocol:  https://github.com/mahmood726-cyber/TrialAtlas/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/trialatlas/
+
+References (topic pack: multilevel / three-level meta-analysis):
+  1. Cheung MW-L. 2014. Modeling dependent effect sizes with three-level meta-analyses: a structural equation modeling approach. Psychol Methods. 19(2):211-229. doi:10.1037/a0032968
+  2. Van den Noortgate W, López-López JA, Marín-Martínez F, Sánchez-Meca J. 2013. Three-level meta-analysis of dependent effect sizes. Behav Res Methods. 45(2):576-594. doi:10.3758/s13428-012-0261-6
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[351/485] E156
+TITLE: E156: A Compact Evidence-Synthesis Micro-Paper Format for Standardized Reporting of Meta-Analytic Results
+TYPE: methods  |  ESTIMAND: Format compliance rate (proportion meeting 7-sentence 156-word constraint)
+DATA: 339 meta-analysis projects converted to E156 format
+PATH: C:\E156
+
+CURRENT BODY (142 words):
+Can a fixed 7-sentence, 156-word micro-paper format standardize the reporting of meta-analytic results while preserving essential information for clinical decision-making? We developed the E156 specification requiring exactly seven sentences covering question, dataset, method, result, robustness, interpretation, and limitation within a maximum of 156 words. The format was applied to 339 meta-analysis projects spanning pairwise, network, diagnostic accuracy, and prevalence synthesis types. All 339 entries achieved full compliance with the 7-sentence constraint, and mean word count was 152.4 (range 138 to 156) demonstrating the format accommodates diverse study designs. An interactive library dashboard and batch validation pipeline enforce compliance automatically, with scripts for workbook management, GitHub deployment, and protocol timestamping. The E156 format enables rapid editorial triage, systematic comparison across evidence syntheses, and machine-readable extraction of key results. The format cannot capture nuanced subgroup analyses or complex network geometries that require extended narrative.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/E156
+  Protocol:  https://github.com/mahmood726-cyber/E156/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/e156/
+
+References (topic pack: diagnostic meta-analysis (DTA)):
+  1. Reitsma JB et al. 2005. Bivariate analysis of sensitivity and specificity produces informative summary measures in diagnostic reviews. J Clin Epidemiol. 58(10):982-990. doi:10.1016/j.jclinepi.2005.02.022
+  2. Rutter CM, Gatsonis CA. 2001. A hierarchical regression approach to meta-analysis of diagnostic test accuracy evaluations. Stat Med. 20(19):2865-2884. doi:10.1002/sim.942
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[352/485] NICECardiology
+TITLE: NICE Cardiology Guidance Under the Microscope: A Data-Driven Statistical Critique — E156 ◆ Synthēsis</title>
+<meta name="description" content="E156 micro-paper: EnrollmentOracle: ML Prediction of Clinical Trial Enrollment Speed from ClinicalTrials.gov Metadata
+TYPE: methods  |  ESTIMAND: Predicted enrollment duration (months, 95% prediction interval)
+DATA: ClinicalTrials.gov API v2, interventional trials 2010-2025
+PATH: C:\Models\EnrollmentOracle
+
+CURRENT BODY (139 words):
+Can machine learning predict clinical trial enrollment speed from publicly available registry metadata before a trial opens? We extracted protocol features from ClinicalTrials.gov for interventional trials registered between 2010 and 2025 across all therapeutic areas. A gradient-boosted ensemble combining site count, eligibility complexity, phase, and therapeutic area predicted enrollment duration in months with calibrated prediction intervals. The model achieved a concordance index of 0.74 (95% CI 0.71 to 0.77) on a held-out test set stratified by sponsor type and geography. SHAP analysis identified number of sites and eligibility criterion count as the two most influential predictors, each contributing over 15 percent of feature importance. The interactive dashboard enables sponsors to explore enrollment projections and identify bottleneck features before trial launch. Predictions are limited to trial types represented in the training data and cannot anticipate regulatory or pandemic-related enrollment disruptions.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/EnrollmentOracle
+  Protocol:  https://github.com/mahmood726-cyber/EnrollmentOracle/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/enrollmentoracle/
+
+References (topic pack: heterogeneity / prediction interval):
+  1. Higgins JPT, Thompson SG. 2002. Quantifying heterogeneity in a meta-analysis. Stat Med. 21(11):1539-1558. doi:10.1002/sim.1186
+  2. IntHout J, Ioannidis JP, Rovers MM, Goeman JJ. 2016. Plea for routinely presenting prediction intervals in meta-analysis. BMJ Open. 6(7):e010247. doi:10.1136/bmjopen-2015-010247
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[347/485] HTNPipeline
+TITLE: HyperAtlas: A Bayesian Hypertension Prevalence Pipeline with WHO and World Bank Data Integration
+TYPE: methods  |  ESTIMAND: National hypertension prevalence posterior mean and 95% credible interval
+DATA: WHO Global Health Observatory, World Bank WDI, 54 indicator variables across 195 countries
+PATH: C:\Models\HTNPipeline
+
+CURRENT BODY (146 words):
+Can a Bayesian hierarchical pipeline provide country-level hypertension prevalence estimates by integrating WHO and World Bank indicators? We harmonized 54 socioeconomic and health indicators from the WHO Global Health Observatory and World Bank for 195 countries from 2000 to 2024. A Gibbs sampler with conjugate priors estimated posterior distributions of national hypertension prevalence conditional on GDP, health expenditure, urbanization, and dietary risk factors. The pipeline produced prevalence estimates for 180 countries with a mean posterior width of 4.2 percentage points (95% credible interval 2.8 to 6.1) and cross-validated concordance of 0.81 against NCD-RisC benchmarks. Counterfactual analyses showed that a 10 percent increase in per-capita health expenditure was associated with a 1.3 percentage point reduction in hypertension prevalence. The interactive dashboard displays choropleth maps, counterfactual scenarios, and TruthCert-audited output bundles. Estimates depend on the completeness of WHO reporting and cannot replace direct population surveys in low-data settings.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/HTNPipeline
+  Protocol:  https://github.com/mahmood726-cyber/HTNPipeline/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/htnpipeline/
+
+References (topic pack: causal inference / triangulation):
+  1. Lawlor DA, Tilling K, Davey Smith G. 2016. Triangulation in aetiological epidemiology. Int J Epidemiol. 45(6):1866-1886. doi:10.1093/ije/dyw314
+  2. Hernán MA, Robins JM. 2016. Using big data to emulate a target trial when a randomized trial is not available. Am J Epidemiol. 183(8):758-764. doi:10.1093/aje/kwv254
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[348/485] OutcomeSwitchDetector
+TITLE: OutcomeSwitchDetector: Automated Detection of Primary Outcome Switching in ClinicalTrials.gov Protocols
+TYPE: methods  |  ESTIMAND: Outcome switching rate (proportion with 95% CI)
+DATA: ClinicalTrials.gov API v2, protocol amendment histories
+PATH: C:\Models\OutcomeSwitchDetector
+
+CURRENT BODY (134 words):
+Can automated text comparison detect primary outcome switching between clinical trial protocol versions registered on ClinicalTrials.gov? We harvested protocol amendment histories from ClinicalTrials.gov for interventional trials with at least two registered protocol versions. A diff engine with semantic endpoint parsing classified changes as additions, removals, or modifications of primary and secondary outcome measures. Across the analyzed cohort the outcome switching rate was 18.4 percent (95% CI 16.2 to 20.8) for primary endpoints, with oncology and cardiovascular trials showing the highest rates. Severity scoring weighted switches by clinical importance, with 6.1 percent classified as high-severity involving a change in the primary efficacy endpoint direction. The dashboard provides trial-level audit trails linking each detected switch to its protocol version timestamps. Detection is limited to changes captured in ClinicalTrials.gov structured fields and cannot identify unreported protocol amendments.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/OutcomeSwitchDetector
+  Protocol:  https://github.com/mahmood726-cyber/OutcomeSwitchDetector/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/outcomeswitchdetector/
+
+References (topic pack: CT.gov / ClinicalTrials.gov audit):
+  1. Zarin DA, Tse T, Williams RJ, Rajakannan T. 2017. Update on trial registration 11 years after the ICMJE policy was established. N Engl J Med. 376(4):383-391. doi:10.1056/NEJMsr1601330
+  2. Anderson ML, Chiswell K, Peterson ED, Tasneem A, Topping J, Califf RM. 2015. Compliance with results reporting at ClinicalTrials.gov. N Engl J Med. 372(11):1031-1039. doi:10.1056/NEJMsa1409364
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[349/485] ProtocolEvolution
+TITLE: ProtocolEvolution: Mapping Temporal Patterns of Clinical Trial Protocol Amendments Across Therapeutic Areas
+TYPE: methods  |  ESTIMAND: Amendment rate per trial-year (count with 95% CI)
+DATA: ClinicalTrials.gov API v2, protocol version histories 2010-2025
+PATH: C:\Models\ProtocolEvolution
+
+CURRENT BODY (137 words):
+How frequently do clinical trial protocols undergo amendments, and do amendment patterns differ systematically across therapeutic areas and trial phases? We extracted protocol version histories from ClinicalTrials.gov for interventional trials registered between 2010 and 2025 with at least one recorded amendment. A change classifier categorized amendments by type including eligibility modifications, endpoint changes, sample size adjustments, and administrative corrections. The median amendment rate was 2.3 per trial-year (95% CI 2.1 to 2.5), with phase III oncology trials showing the highest rate at 3.8 amendments per trial-year. Pattern detection identified eligibility broadening as the most common amendment type, occurring in 41 percent of amended trials within the first 12 months of enrollment. The interactive dashboard displays amendment timelines, category breakdowns, and cross-trial comparison heatmaps. Analysis is restricted to amendments recorded in ClinicalTrials.gov and underestimates true protocol change frequency.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/ProtocolEvolution
+  Protocol:  https://github.com/mahmood726-cyber/ProtocolEvolution/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/protocolevolution/
+
+References (topic pack: CT.gov / ClinicalTrials.gov audit):
+  1. Zarin DA, Tse T, Williams RJ, Rajakannan T. 2017. Update on trial registration 11 years after the ICMJE policy was established. N Engl J Med. 376(4):383-391. doi:10.1056/NEJMsr1601330
+  2. Anderson ML, Chiswell K, Peterson ED, Tasneem A, Topping J, Califf RM. 2015. Compliance with results reporting at ClinicalTrials.gov. N Engl J Med. 372(11):1031-1039. doi:10.1056/NEJMsa1409364
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[350/485] TrialAtlas
+TITLE: TrialAtlas: A Network Visualization of Global Clinical Trial Connectivity Across Sites, Sponsors, and Conditions
+TYPE: methods  |  ESTIMAND: Network centrality and community structure metrics
+DATA: ClinicalTrials.gov API v2, trial-site-sponsor network for 400K+ trials
+PATH: C:\Models\TrialAtlas
+
+CURRENT BODY (136 words):
+Can network analysis reveal the hidden connectivity structure linking clinical trial sites, sponsors, and therapeutic conditions across the global registry? We constructed a tripartite network from ClinicalTrials.gov linking trial sites, sponsors, and medical conditions for over 400,000 registered interventional studies. Community detection using Louvain modularity identified 23 distinct research clusters, with the largest cardiovascular-metabolic cluster spanning 47 countries and 2,800 unique sites. Network centrality analysis revealed that the top 50 sites by betweenness centrality participated in 12 percent of all registered trials, suggesting concentration risk in the global trial infrastructure. Geographic analysis identified 31 countries with no site appearing in any detected community, indicating research isolation. The interactive dashboard provides force-directed network visualization, community exploration, and site-level connectivity metrics. The analysis captures only ClinicalTrials.gov-registered trials and may underrepresent activity in countries that primarily use other registries.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/TrialAtlas
+  Protocol:  https://github.com/mahmood726-cyber/TrialAtlas/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/trialatlas/
+
+References (topic pack: multilevel / three-level meta-analysis):
+  1. Cheung MW-L. 2014. Modeling dependent effect sizes with three-level meta-analyses: a structural equation modeling approach. Psychol Methods. 19(2):211-229. doi:10.1037/a0032968
+  2. Van den Noortgate W, López-López JA, Marín-Martínez F, Sánchez-Meca J. 2013. Three-level meta-analysis of dependent effect sizes. Behav Res Methods. 45(2):576-594. doi:10.3758/s13428-012-0261-6
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[351/485] E156
+TITLE: E156: A Compact Evidence-Synthesis Micro-Paper Format for Standardized Reporting of Meta-Analytic Results
+TYPE: methods  |  ESTIMAND: Format compliance rate (proportion meeting 7-sentence 156-word constraint)
+DATA: 339 meta-analysis projects converted to E156 format
+PATH: C:\E156
+
+CURRENT BODY (142 words):
+Can a fixed 7-sentence, 156-word micro-paper format standardize the reporting of meta-analytic results while preserving essential information for clinical decision-making? We developed the E156 specification requiring exactly seven sentences covering question, dataset, method, result, robustness, interpretation, and limitation within a maximum of 156 words. The format was applied to 339 meta-analysis projects spanning pairwise, network, diagnostic accuracy, and prevalence synthesis types. All 339 entries achieved full compliance with the 7-sentence constraint, and mean word count was 152.4 (range 138 to 156) demonstrating the format accommodates diverse study designs. An interactive library dashboard and batch validation pipeline enforce compliance automatically, with scripts for workbook management, GitHub deployment, and protocol timestamping. The E156 format enables rapid editorial triage, systematic comparison across evidence syntheses, and machine-readable extraction of key results. The format cannot capture nuanced subgroup analyses or complex network geometries that require extended narrative.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/E156
+  Protocol:  https://github.com/mahmood726-cyber/E156/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/e156/
+
+References (topic pack: diagnostic meta-analysis (DTA)):
+  1. Reitsma JB et al. 2005. Bivariate analysis of sensitivity and specificity produces informative summary measures in diagnostic reviews. J Clin Epidemiol. 58(10):982-990. doi:10.1016/j.jclinepi.2005.02.022
+  2. Rutter CM, Gatsonis CA. 2001. A hierarchical regression approach to meta-analysis of diagnostic test accuracy evaluations. Stat Med. 20(19):2865-2884. doi:10.1002/sim.942
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[352/485] NICECardiology
+TITLE: NICE Cardiology Guidance Under the Microscope: A Data-Driven Statistical Critique (HR, methods). 7 sentences, 156 words. Targeting Synthēsis.">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { padding: 2rem 1rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #1a1a1a; background: #fef3c7; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  .mark { color: #92400e; font-weight: 600; letter-spacing: 0.02em; font-size: 0.9rem; }
+  h1 { font-size: 1.55rem; line-height: 1.25; margin: 0.3rem 0 0.5rem; letter-spacing: -0.01em; }
+  .sub { color: #6b7280; font-size: 0.9rem; margin-bottom: 1.5rem; }
+  .sub code { background: #e5e7eb; padding: 1px 5px; border-radius: 3px; font-size: 0.85em; }
+  .highlight { background: linear-gradient(135deg, #92400e22, #92400e0a); border-left: 4px solid #92400e; padding: 0.9rem 1.1rem; border-radius: 0 6px 6px 0; margin: 0 0 1.5rem; font-size: 1rem; color: #1f2937; }
+  .highlight strong { color: #92400e; }
+  .body { background: white; padding: 1.5rem; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .body p { margin: 0; }
+  .readme { background: #fafafa; padding: 1rem 1.2rem; border-radius: 6px; border: 1px dashed #d1d5db; margin-bottom: 1.5rem; font-size: 0.88rem; color: #4b5563; font-style: italic; }
+  .readme::before { content: "FROM THE README — "; font-weight: 600; font-style: normal; color: #9ca3af; font-size: 0.75rem; letter-spacing: 0.05em; }
+  .stats { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .chip { background: white; border: 1px solid #e5e7eb; border-radius: 20px; padding: 0.3rem 0.8rem; font-size: 0.8rem; color: #4b5563; }
+  .chip strong { color: #1a1a1a; }
+  .links { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.5rem; margin-bottom: 1rem; }
+  .links a { display: block; padding: 0.7rem 1rem; background: white; border: 1px solid #e5e7eb; border-radius: 6px; color: #3730a3; text-decoration: none; font-size: 0.88rem; text-align: center; }
+  .links a:hover { background: #f3f4f6; border-color: #92400e88; }
+  .files { background: #f9fafb; padding: 0.8rem 1rem; border-radius: 6px; border: 1px solid #e5e7eb; margin-bottom: 1.5rem; font-size: 0.83rem; color: #6b7280; }
+  .files code { background: white; border: 1px solid #e5e7eb; padding: 1px 6px; border-radius: 3px; margin: 0 2px; display: inline-block; color: #1f2937; }
+  .meta { font-size: 0.82rem; color: #4b5563; background: white; padding: 1rem 1.2rem; border-radius: 6px; border: 1px solid #e5e7eb; }
+  .meta dt { font-weight: 600; margin-top: 0.4rem; color: #111827; }
+  .meta dt:first-child { margin-top: 0; }
+  footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; color: #9ca3af; font-size: 0.8rem; text-align: center; }
+  footer a { color: #6b7280; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<p class="mark">◆ Synthēsis · Methods Note</p>
+<h1>EnrollmentOracle: ML Prediction of Clinical Trial Enrollment Speed from ClinicalTrials.gov Metadata
+TYPE: methods  |  ESTIMAND: Predicted enrollment duration (months, 95% prediction interval)
+DATA: ClinicalTrials.gov API v2, interventional trials 2010-2025
+PATH: C:\Models\EnrollmentOracle
+
+CURRENT BODY (139 words):
+Can machine learning predict clinical trial enrollment speed from publicly available registry metadata before a trial opens? We extracted protocol features from ClinicalTrials.gov for interventional trials registered between 2010 and 2025 across all therapeutic areas. A gradient-boosted ensemble combining site count, eligibility complexity, phase, and therapeutic area predicted enrollment duration in months with calibrated prediction intervals. The model achieved a concordance index of 0.74 (95% CI 0.71 to 0.77) on a held-out test set stratified by sponsor type and geography. SHAP analysis identified number of sites and eligibility criterion count as the two most influential predictors, each contributing over 15 percent of feature importance. The interactive dashboard enables sponsors to explore enrollment projections and identify bottleneck features before trial launch. Predictions are limited to trial types represented in the training data and cannot anticipate regulatory or pandemic-related enrollment disruptions.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/EnrollmentOracle
+  Protocol:  https://github.com/mahmood726-cyber/EnrollmentOracle/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/enrollmentoracle/
+
+References (topic pack: heterogeneity / prediction interval):
+  1. Higgins JPT, Thompson SG. 2002. Quantifying heterogeneity in a meta-analysis. Stat Med. 21(11):1539-1558. doi:10.1002/sim.1186
+  2. IntHout J, Ioannidis JP, Rovers MM, Goeman JJ. 2016. Plea for routinely presenting prediction intervals in meta-analysis. BMJ Open. 6(7):e010247. doi:10.1136/bmjopen-2015-010247
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[347/485] HTNPipeline
+TITLE: HyperAtlas: A Bayesian Hypertension Prevalence Pipeline with WHO and World Bank Data Integration
+TYPE: methods  |  ESTIMAND: National hypertension prevalence posterior mean and 95% credible interval
+DATA: WHO Global Health Observatory, World Bank WDI, 54 indicator variables across 195 countries
+PATH: C:\Models\HTNPipeline
+
+CURRENT BODY (146 words):
+Can a Bayesian hierarchical pipeline provide country-level hypertension prevalence estimates by integrating WHO and World Bank indicators? We harmonized 54 socioeconomic and health indicators from the WHO Global Health Observatory and World Bank for 195 countries from 2000 to 2024. A Gibbs sampler with conjugate priors estimated posterior distributions of national hypertension prevalence conditional on GDP, health expenditure, urbanization, and dietary risk factors. The pipeline produced prevalence estimates for 180 countries with a mean posterior width of 4.2 percentage points (95% credible interval 2.8 to 6.1) and cross-validated concordance of 0.81 against NCD-RisC benchmarks. Counterfactual analyses showed that a 10 percent increase in per-capita health expenditure was associated with a 1.3 percentage point reduction in hypertension prevalence. The interactive dashboard displays choropleth maps, counterfactual scenarios, and TruthCert-audited output bundles. Estimates depend on the completeness of WHO reporting and cannot replace direct population surveys in low-data settings.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/HTNPipeline
+  Protocol:  https://github.com/mahmood726-cyber/HTNPipeline/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/htnpipeline/
+
+References (topic pack: causal inference / triangulation):
+  1. Lawlor DA, Tilling K, Davey Smith G. 2016. Triangulation in aetiological epidemiology. Int J Epidemiol. 45(6):1866-1886. doi:10.1093/ije/dyw314
+  2. Hernán MA, Robins JM. 2016. Using big data to emulate a target trial when a randomized trial is not available. Am J Epidemiol. 183(8):758-764. doi:10.1093/aje/kwv254
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[348/485] OutcomeSwitchDetector
+TITLE: OutcomeSwitchDetector: Automated Detection of Primary Outcome Switching in ClinicalTrials.gov Protocols
+TYPE: methods  |  ESTIMAND: Outcome switching rate (proportion with 95% CI)
+DATA: ClinicalTrials.gov API v2, protocol amendment histories
+PATH: C:\Models\OutcomeSwitchDetector
+
+CURRENT BODY (134 words):
+Can automated text comparison detect primary outcome switching between clinical trial protocol versions registered on ClinicalTrials.gov? We harvested protocol amendment histories from ClinicalTrials.gov for interventional trials with at least two registered protocol versions. A diff engine with semantic endpoint parsing classified changes as additions, removals, or modifications of primary and secondary outcome measures. Across the analyzed cohort the outcome switching rate was 18.4 percent (95% CI 16.2 to 20.8) for primary endpoints, with oncology and cardiovascular trials showing the highest rates. Severity scoring weighted switches by clinical importance, with 6.1 percent classified as high-severity involving a change in the primary efficacy endpoint direction. The dashboard provides trial-level audit trails linking each detected switch to its protocol version timestamps. Detection is limited to changes captured in ClinicalTrials.gov structured fields and cannot identify unreported protocol amendments.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/OutcomeSwitchDetector
+  Protocol:  https://github.com/mahmood726-cyber/OutcomeSwitchDetector/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/outcomeswitchdetector/
+
+References (topic pack: CT.gov / ClinicalTrials.gov audit):
+  1. Zarin DA, Tse T, Williams RJ, Rajakannan T. 2017. Update on trial registration 11 years after the ICMJE policy was established. N Engl J Med. 376(4):383-391. doi:10.1056/NEJMsr1601330
+  2. Anderson ML, Chiswell K, Peterson ED, Tasneem A, Topping J, Califf RM. 2015. Compliance with results reporting at ClinicalTrials.gov. N Engl J Med. 372(11):1031-1039. doi:10.1056/NEJMsa1409364
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[349/485] ProtocolEvolution
+TITLE: ProtocolEvolution: Mapping Temporal Patterns of Clinical Trial Protocol Amendments Across Therapeutic Areas
+TYPE: methods  |  ESTIMAND: Amendment rate per trial-year (count with 95% CI)
+DATA: ClinicalTrials.gov API v2, protocol version histories 2010-2025
+PATH: C:\Models\ProtocolEvolution
+
+CURRENT BODY (137 words):
+How frequently do clinical trial protocols undergo amendments, and do amendment patterns differ systematically across therapeutic areas and trial phases? We extracted protocol version histories from ClinicalTrials.gov for interventional trials registered between 2010 and 2025 with at least one recorded amendment. A change classifier categorized amendments by type including eligibility modifications, endpoint changes, sample size adjustments, and administrative corrections. The median amendment rate was 2.3 per trial-year (95% CI 2.1 to 2.5), with phase III oncology trials showing the highest rate at 3.8 amendments per trial-year. Pattern detection identified eligibility broadening as the most common amendment type, occurring in 41 percent of amended trials within the first 12 months of enrollment. The interactive dashboard displays amendment timelines, category breakdowns, and cross-trial comparison heatmaps. Analysis is restricted to amendments recorded in ClinicalTrials.gov and underestimates true protocol change frequency.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/ProtocolEvolution
+  Protocol:  https://github.com/mahmood726-cyber/ProtocolEvolution/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/protocolevolution/
+
+References (topic pack: CT.gov / ClinicalTrials.gov audit):
+  1. Zarin DA, Tse T, Williams RJ, Rajakannan T. 2017. Update on trial registration 11 years after the ICMJE policy was established. N Engl J Med. 376(4):383-391. doi:10.1056/NEJMsr1601330
+  2. Anderson ML, Chiswell K, Peterson ED, Tasneem A, Topping J, Califf RM. 2015. Compliance with results reporting at ClinicalTrials.gov. N Engl J Med. 372(11):1031-1039. doi:10.1056/NEJMsa1409364
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[350/485] TrialAtlas
+TITLE: TrialAtlas: A Network Visualization of Global Clinical Trial Connectivity Across Sites, Sponsors, and Conditions
+TYPE: methods  |  ESTIMAND: Network centrality and community structure metrics
+DATA: ClinicalTrials.gov API v2, trial-site-sponsor network for 400K+ trials
+PATH: C:\Models\TrialAtlas
+
+CURRENT BODY (136 words):
+Can network analysis reveal the hidden connectivity structure linking clinical trial sites, sponsors, and therapeutic conditions across the global registry? We constructed a tripartite network from ClinicalTrials.gov linking trial sites, sponsors, and medical conditions for over 400,000 registered interventional studies. Community detection using Louvain modularity identified 23 distinct research clusters, with the largest cardiovascular-metabolic cluster spanning 47 countries and 2,800 unique sites. Network centrality analysis revealed that the top 50 sites by betweenness centrality participated in 12 percent of all registered trials, suggesting concentration risk in the global trial infrastructure. Geographic analysis identified 31 countries with no site appearing in any detected community, indicating research isolation. The interactive dashboard provides force-directed network visualization, community exploration, and site-level connectivity metrics. The analysis captures only ClinicalTrials.gov-registered trials and may underrepresent activity in countries that primarily use other registries.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/TrialAtlas
+  Protocol:  https://github.com/mahmood726-cyber/TrialAtlas/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/trialatlas/
+
+References (topic pack: multilevel / three-level meta-analysis):
+  1. Cheung MW-L. 2014. Modeling dependent effect sizes with three-level meta-analyses: a structural equation modeling approach. Psychol Methods. 19(2):211-229. doi:10.1037/a0032968
+  2. Van den Noortgate W, López-López JA, Marín-Martínez F, Sánchez-Meca J. 2013. Three-level meta-analysis of dependent effect sizes. Behav Res Methods. 45(2):576-594. doi:10.3758/s13428-012-0261-6
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[351/485] E156
+TITLE: E156: A Compact Evidence-Synthesis Micro-Paper Format for Standardized Reporting of Meta-Analytic Results
+TYPE: methods  |  ESTIMAND: Format compliance rate (proportion meeting 7-sentence 156-word constraint)
+DATA: 339 meta-analysis projects converted to E156 format
+PATH: C:\E156
+
+CURRENT BODY (142 words):
+Can a fixed 7-sentence, 156-word micro-paper format standardize the reporting of meta-analytic results while preserving essential information for clinical decision-making? We developed the E156 specification requiring exactly seven sentences covering question, dataset, method, result, robustness, interpretation, and limitation within a maximum of 156 words. The format was applied to 339 meta-analysis projects spanning pairwise, network, diagnostic accuracy, and prevalence synthesis types. All 339 entries achieved full compliance with the 7-sentence constraint, and mean word count was 152.4 (range 138 to 156) demonstrating the format accommodates diverse study designs. An interactive library dashboard and batch validation pipeline enforce compliance automatically, with scripts for workbook management, GitHub deployment, and protocol timestamping. The E156 format enables rapid editorial triage, systematic comparison across evidence syntheses, and machine-readable extraction of key results. The format cannot capture nuanced subgroup analyses or complex network geometries that require extended narrative.
+
+YOUR REWRITE (at most 156 words, 7 sentences):
+
+
+SUBMISSION METADATA:
+
+Corresponding author: Mahmood Ahmad &lt;mahmood.ahmad2@nhs.net&gt;
+ORCID: 0000-0001-9107-3704
+Affiliation: Tahir Heart Institute, Rabwah, Pakistan
+
+Links:
+  Code:      https://github.com/mahmood726-cyber/E156
+  Protocol:  https://github.com/mahmood726-cyber/E156/blob/main/E156-PROTOCOL.md
+  Dashboard: https://mahmood726-cyber.github.io/e156/
+
+References (topic pack: diagnostic meta-analysis (DTA)):
+  1. Reitsma JB et al. 2005. Bivariate analysis of sensitivity and specificity produces informative summary measures in diagnostic reviews. J Clin Epidemiol. 58(10):982-990. doi:10.1016/j.jclinepi.2005.02.022
+  2. Rutter CM, Gatsonis CA. 2001. A hierarchical regression approach to meta-analysis of diagnostic test accuracy evaluations. Stat Med. 20(19):2865-2884. doi:10.1002/sim.942
+
+Data availability: No patient-level data used. Analysis derived exclusively
+  from publicly available aggregate records. All source identifiers are in
+  the protocol document linked above.
+
+Ethics: Not required. Study uses only publicly available aggregate data; no
+  human participants; no patient-identifiable information; no individual-
+  participant data. No institutional review board approval sought or required
+  under standard research-ethics guidelines for secondary methodological
+  research on published literature.
+
+Funding: None.
+
+Competing interests: MA serves on the editorial board of Synthēsis (the
+  target journal); MA had no role in editorial decisions on this
+  manuscript, which was handled by an independent editor of the journal.
+
+Author contributions (CRediT):
+  [STUDENT REWRITER, first author] — Writing – original draft, Writing –
+    review &amp; editing, Validation.
+  [SUPERVISING FACULTY, last/senior author] — Supervision, Validation,
+    Writing – review &amp; editing.
+  Mahmood Ahmad (middle author, NOT first or last) — Conceptualization,
+    Methodology, Software, Data curation, Formal analysis, Resources.
+
+AI disclosure: Computational tooling (including AI-assisted coding via
+  Claude Code [Anthropic]) was used to develop analysis scripts and assist
+  with data extraction. The final manuscript was human-written, reviewed,
+  and approved by the author; the submitted text is not AI-generated. All
+  quantitative claims were verified against source data; cross-validation
+  was performed where applicable. The author retains full responsibility for
+  the final content.
+
+Preprint: Not preprinted.
+
+Reporting checklist: PRISMA 2020 (methods-paper variant — reports on review corpus).
+
+Target journal: ◆ Synthēsis (https://www.synthesis-medicine.org/index.php/journal)
+  Section: Methods Note — submit the 156-word E156 body verbatim as the main text.
+  The journal caps main text at ≤400 words; E156's 156-word, 7-sentence
+  contract sits well inside that ceiling. Do NOT pad to 400 — the
+  micro-paper length is the point of the format.
+
+Manuscript license: CC-BY-4.0.
+Code license: MIT.
+
+SUBMITTED: [ ]
+
+======================================================================
+
+[352/485] NICECardiology
+TITLE: NICE Cardiology Guidance Under the Microscope: A Data-Driven Statistical Critique</h1>
+<p class="sub">Project <code>EnrollmentOracle</code> · <strong>methods</strong> study · primary estimand <strong>HR</strong></p>
+
+<div class="highlight"><strong>Key result:</strong> The pooled SGLT2i class-effect HR was 0.79 (95% CI 0.74-0.84, I-squared 28%) across eight trials with Monte Carlo reversal probability below 0.</div>
+
+<div class="stats">
+  <span class="chip">📏 <strong>156 words</strong> / 7 sentences</span>
+  
+  
+  
+</div>
+
+<div class="body">
+<p>Can client-side meta-analytic computation expose systematic evidence-adoption gaps in national clinical guidelines? We analysed NICE heart failure and acute coronary syndrome guidelines against 20 completed Phase 3 SGLT2 inhibitor trials enrolling 28,553 patients and 7 post-ACS lipid trials enrolling 67,254 patients, cross-referencing CT.gov registry data, EMA/FDA/WHO regulatory timelines, NHS prescribing statistics, and six international guideline bodies. Forty statistical methods including DerSimonian-Laird pooling, trial sequential analysis, Monte Carlo simulation, Markov QALY modelling, Bayesian model averaging, persistent homology, and E-values were computed entirely client-side in 10,463 lines of dependency-free JavaScript. The pooled SGLT2i class-effect HR was 0.79 (95% CI 0.74-0.84, I-squared 28%) across eight trials with Monte Carlo reversal probability below 0.1 percent; NICE ranked last of six guideline bodies in adoption timing. Fourteen NYT-style canvas charts and on-demand WebR cross-validation with R metafor provide full computational reproducibility. The analysis cannot account for unpublished NICE cost-effectiveness deliberations.</p>
+</div>
+
+
+
+<div class="files">Repo contents: <code>E156-PROTOCOL.md</code> <code>dashboard.html</code> <code>e156-submission</code> <code>push.sh</code> <code>run_analysis.py</code> <code>src</code></div>
+
+<div class="links">
+  <a href="https://github.com/mahmood726-cyber/EnrollmentOracle">▶ Source code</a>
+  <a href="https://github.com/mahmood726-cyber/EnrollmentOracle/blob/main/E156-PROTOCOL.md">📄 E156 protocol</a>
+  <a href="https://mahmood726-cyber.github.io/e156/students.html" target="_blank">🎓 Claim this paper</a>
+  <a href="https://www.synthesis-medicine.org/index.php/journal" target="_blank">📖 Synthēsis journal</a>
+</div>
+
+<div class="meta">
+<dt>Target journal</dt>
+<dd>◆ Synthēsis (synthesis-medicine.org) — section: Methods Note</dd>
+<dt>Format contract</dt>
+<dd>E156 micro-paper: exactly 7 sentences, ≤156 words, single paragraph</dd>
+<dt>License</dt>
+<dd>Manuscript: CC-BY-4.0 · Code: MIT</dd>
+<dt>Status</dt>
+<dd>Open — claim on the student board</dd>
+</div>
+
+<footer>
+  Landing page for <code>EnrollmentOracle</code> · part of the E156 portfolio ·
+  <a href="https://mahmood726-cyber.github.io/e156/students.html">claim this paper on the student board</a>
+</footer>
+
+</div>
+</body>
+</html>
