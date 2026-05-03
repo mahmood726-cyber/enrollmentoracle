@@ -10,7 +10,11 @@
   "notes": {
     "code": "https://github.com/mahmood726-cyber/enrollmentoracle"
   },
-  "references": [],
+  "references": [
+    "Borenstein M, Hedges LV, Higgins JPT, Rothstein HR. Introduction to Meta-Analysis. 2nd ed. Wiley; 2021.",
+    "Higgins JPT, Thompson SG, Deeks JJ, Altman DG. Measuring inconsistency in meta-analyses. BMJ. 2003;327(7414):557-560.",
+    "Cochrane Handbook for Systematic Reviews of Interventions. Version 6.4. Cochrane; 2023."
+  ],
   "submitted": false,
   "path": "C:\\Models\\EnrollmentOracle",
   "title": "Untitled E156",
