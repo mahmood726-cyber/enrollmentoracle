@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EnrollmentOracle - ML Completion Prediction Dashboard</title>
+<style>
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f4f6f9;
+  --bg-card: #ffffff;
+  --text-primary: #1a1a2e;
+  --text-secondary: #4a4a6a;
+  --text-muted: #8888a0;
+  --border-color: #e0e4ea;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-light: #dbeafe;
+  --success: #16a34a;
+  --success-bg: #dcfce7;
+  --warning: #d97706;
+  --warning-bg: #fef3c7;
+  --danger: #dc2626;
+  --danger-bg: #fee2e2;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-lg: 0 4px 12px rgba(0,0,0,0.1);
+  --radius: 8px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Cascadia Code", "Fira Code", Consolas, monospace;
+}
+
+body.dark {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-card: #1e293b;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border-color: #334155;
+  --accent: #3b82f6;
+  --accent-hover: #60a5fa;
+  --accent-light: #1e3a5f;
+  --success: #22c55e;
+  --success-bg: #14532d;
+  --warning: #f59e0b;
+  --warning-bg: #451a03;
+  --danger: #ef4444;
+  --danger-bg: #450a0a;
+  --shadow: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-lg: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Skip-nav link */
+.skip-nav {
+  position: absolute;
+  top: -100px;
+  left: 8px;
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 0 0 var(--radius) var(--radius);
+  z-index: 10000;
+  font-size: 14px;
+  text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-nav:focus {
+  top: 0;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Header */
+header {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+header h1 span {
+  color: var(--accent);
+  font-weight: 400;
+}
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.data-status {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+.dark-toggle {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font);
+  transition: background 0.2s, border-color 0.2s;
+}
+.dark-toggle:hover {
+  border-color: var(--accent);
+}
+.dark-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Tab Navigation */
+.tab-nav {
+  display: flex;
+  gap: 0;
+  background: var(--bg-secondary);
+  border-bottom: 2px solid var(--border-color);
+  padding: 0 24px;
+  overflow-x: auto;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  font-family: var(--font);
+  white-space: nowrap;
+  transition: color 0.2s, border-color 0.2s;
+}
+.tab-btn:hover {
+  color: var(--accent);
+}
+.tab-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+
+/* Main content */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Panel visibility */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.card h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+.card h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--text-secondary);
+}
+
+/* Form elements */
+.input-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+.input-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+input[type="text"], select {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-family: var(--font-mono);
+  transition: border-color 0.2s;
+}
+input[type="text"]:focus, select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+.btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 8px 20px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.2s;
+}
+.btn:hover { background: var(--accent-hover); }
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Risk badges */
+.risk-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.risk-low { background: var(--success-bg); color: var(--success); }
+.risk-medium { background: var(--warning-bg); color: var(--warning); }
+.risk-high { background: var(--danger-bg); color: var(--danger); }
+
+/* Progress bar */
+.prob-bar-container {
+  width: 100%;
+  height: 24px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 8px 0;
+  position: relative;
+}
+.prob-bar-fill {
+  height: 100%;
+  border-radius: 12px;
+  transition: width 0.5s ease;
+  min-width: 2px;
+}
+.prob-bar-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.data-table th {
+  text-align: left;
+  padding: 10px 12px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-color);
+  cursor: pointer;
+  user-select: none;
+}
+.data-table th:hover {
+  color: var(--accent);
+}
+.data-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+.data-table tr:hover td {
+  background: var(--bg-secondary);
+}
+
+/* Feature list */
+.feature-list {
+  list-style: none;
+}
+.feature-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 13px;
+}
+.feature-list li:last-child {
+  border-bottom: none;
+}
+.feature-name {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.feature-value {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+/* SVG charts */
+.chart-container {
+  width: 100%;
+  overflow-x: auto;
+}
+.chart-container svg {
+  display: block;
+}
+svg text {
+  font-family: var(--font);
+}
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.stat-box {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+}
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Filters */
+.filter-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filter-row label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.filter-row select {
+  font-size: 13px;
+  padding: 6px 10px;
+}
+
+/* Loading/error states */
+.loading-msg, .error-msg {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 15px;
+}
+.error-msg { color: var(--danger); }
+.loading-msg { color: var(--text-muted); }
+
+/* Two-column layout for charts */
+.chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 768px) {
+  .chart-row {
+    grid-template-columns: 1fr;
+  }
+  .tab-nav { padding: 0 12px; }
+  .tab-btn { padding: 10px 14px; font-size: 13px; }
+  main { padding: 16px; }
+}
+
+/* Predict result area */
+.predict-result {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+}
+.predict-result.hidden { display: none; }
+
+/* Tooltip-like hover info for SVG */
+.svg-tooltip {
+  position: absolute;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  pointer-events: none;
+  box-shadow: var(--shadow-lg);
+  color: var(--text-primary);
+  z-index: 1000;
+  display: none;
+}
+</style>
+</head>
+<body>
+
+<a class="skip-nav" href="#main-content">Skip to main content</a>
+
+<header>
+  <h1>EnrollmentOracle <span>ML Prediction Dashboard</span></h1>
+  <div class="header-controls">
+    <span class="data-status" id="dataStatus">No data loaded</span>
+    <button class="dark-toggle" id="darkToggle" type="button"
+            aria-label="Toggle dark mode">Light Mode</button>
+  </div>
+</header>
+
+<nav class="tab-nav" role="tablist" aria-label="Dashboard panels">
+  <button class="tab-btn active" role="tab" aria-selected="true"
+          aria-controls="panel-predict" id="tab-predict"
+          data-panel="predict">Predict</button>
+  <button class="tab-btn" role="tab" aria-selected="false"
+          aria-controls="panel-population" id="tab-population"
+          data-panel="population">Population View</button>
+  <button class="tab-btn" role="tab" aria-selected="false"
+          aria-controls="panel-risk" id="tab-risk"
+          data-panel="risk">Risk Factors</button>
+  <button class="tab-btn" role="tab" aria-selected="false"
+          aria-controls="panel-sponsor" id="tab-sponsor"
+          data-panel="sponsor">Sponsor Report Card</button>
+  <button class="tab-btn" role="tab" aria-selected="false"
+          aria-controls="panel-validation" id="tab-validation"
+          data-panel="validation">Validation</button>
+</nav>
+
+<main id="main-content">
+
+  <!-- PANEL: Predict -->
+  <div class="panel active" id="panel-predict" role="tabpanel"
+       aria-labelledby="tab-predict">
+    <div class="card">
+      <h2>Trial Completion Prediction</h2>
+      <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px;">
+        Enter an NCT ID to view the model's predicted completion probability,
+        risk level, and top contributing features.
+      </p>
+      <div class="input-group">
+        <label for="nctInput">NCT ID</label>
+        <input type="text" id="nctInput" placeholder="e.g. ML001"
+               aria-label="Enter NCT trial identifier"
+               style="width:220px;">
+        <button class="btn" id="predictBtn" type="button">Predict</button>
+      </div>
+      <div class="predict-result hidden" id="predictResult">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">
+          <div>
+            <span style="font-size:13px;color:var(--text-muted);">Trial</span>
+            <div style="font-size:18px;font-weight:700;font-family:var(--font-mono);"
+                 id="predNctId">--</div>
+          </div>
+          <div>
+            <span style="font-size:13px;color:var(--text-muted);">Risk Level</span>
+            <div id="predRisk">--</div>
+          </div>
+          <div>
+            <span style="font-size:13px;color:var(--text-muted);">Probability</span>
+            <div style="font-size:18px;font-weight:700;font-family:var(--font-mono);"
+                 id="predProb">--</div>
+          </div>
+        </div>
+        <div class="prob-bar-container">
+          <div class="prob-bar-fill" id="predBar" style="width:0%;background:var(--accent);"></div>
+          <span class="prob-bar-label" id="predBarLabel">0%</span>
+        </div>
+        <h3 style="margin-top:16px;">Top 5 Feature Contributions</h3>
+        <ul class="feature-list" id="predFeatures"></ul>
+      </div>
+      <div id="predictError" style="color:var(--danger);font-size:14px;margin-top:12px;display:none;"></div>
+    </div>
+  </div>
+
+  <!-- PANEL: Population View -->
+  <div class="panel" id="panel-population" role="tabpanel"
+       aria-labelledby="tab-population">
+    <div class="card">
+      <h2>Population Completion Probability Distribution</h2>
+      <div class="filter-row">
+        <label for="popCondFilter">Condition:</label>
+        <select id="popCondFilter"><option value="">All</option></select>
+        <label for="popPhaseFilter">Phase:</label>
+        <select id="popPhaseFilter"><option value="">All</option></select>
+      </div>
+      <div class="stats-grid" id="popStats"></div>
+      <div class="chart-container" id="popHistogram"></div>
+    </div>
+  </div>
+
+  <!-- PANEL: Risk Factors -->
+  <div class="panel" id="panel-risk" role="tabpanel"
+       aria-labelledby="tab-risk">
+    <div class="card">
+      <h2>Global Feature Importance (Top 15)</h2>
+      <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px;">
+        Horizontal bar chart showing the relative importance of each feature
+        in the trained model's predictions.
+      </p>
+      <div class="chart-container" id="importanceChart"></div>
+    </div>
+  </div>
+
+  <!-- PANEL: Sponsor Report Card -->
+  <div class="panel" id="panel-sponsor" role="tabpanel"
+       aria-labelledby="tab-sponsor">
+    <div class="card">
+      <h2>Sponsor Report Card</h2>
+      <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px;">
+        Historical completion rate vs model-expected rate by sponsor class.
+        Delta = Actual - Expected (negative means underperforming).
+      </p>
+      <div id="sponsorTable"></div>
+    </div>
+  </div>
+
+  <!-- PANEL: Validation -->
+  <div class="panel" id="panel-validation" role="tabpanel"
+       aria-labelledby="tab-validation">
+    <div class="stats-grid" id="valStats"></div>
+    <div class="chart-row">
+      <div class="card">
+        <h2>Calibration Plot</h2>
+        <p style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;">
+          Predicted probability vs observed frequency. Perfect calibration
+          follows the diagonal.
+        </p>
+        <div class="chart-container" id="calibrationChart"></div>
+      </div>
+      <div class="card">
+        <h2>ROC Curve</h2>
+        <p style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;">
+          Receiver operating characteristic. Area under curve (AUC) measures
+          discrimination.
+        </p>
+        <div class="chart-container" id="rocChart"></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="svg-tooltip" id="tooltip"></div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ---------------------------------------------------------------
+  // State
+  // ---------------------------------------------------------------
+  var DATA = null;
+  var PREFS_KEY = 'eo_preferences';
+
+  // ---------------------------------------------------------------
+  // Preferences (localStorage)
+  // ---------------------------------------------------------------
+  function loadPrefs() {
+    try {
+      var raw = localStorage.getItem(PREFS_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch(e) { return {}; }
+  }
+
+  function savePrefs(prefs) {
+    try {
+      localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+    } catch(e) { /* quota exceeded - ignore */ }
+  }
+
+  // ---------------------------------------------------------------
+  // Dark mode
+  // ---------------------------------------------------------------
+  function initDarkMode() {
+    var prefs = loadPrefs();
+    var isDark = prefs.darkMode === true;
+    applyDarkMode(isDark);
+
+    var btn = document.getElementById('darkToggle');
+    btn.addEventListener('click', function() {
+      isDark = !isDark;
+      applyDarkMode(isDark);
+      var p = loadPrefs();
+      p.darkMode = isDark;
+      savePrefs(p);
+    });
+    btn.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        btn.click();
+      }
+    });
+  }
+
+  function applyDarkMode(isDark) {
+    document.body.classList.toggle('dark', isDark);
+    var btn = document.getElementById('darkToggle');
+    btn.textContent = isDark ? 'Dark Mode' : 'Light Mode';
+    btn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+  }
+
+  // ---------------------------------------------------------------
+  // Tabs
+  // ---------------------------------------------------------------
+  function initTabs() {
+    var tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        switchTab(btn.getAttribute('data-panel'));
+      });
+      btn.addEventListener('keydown', function(e) {
+        var tabs = Array.from(tabBtns);
+        var idx = tabs.indexOf(btn);
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          var next;
+          if (e.key === 'ArrowRight') {
+            next = tabs[(idx + 1) % tabs.length];
+          } else {
+            next = tabs[(idx - 1 + tabs.length) % tabs.length];
+          }
+          next.focus();
+          next.click();
+        }
+      });
+    });
+  }
+
+  function switchTab(panelId) {
+    document.querySelectorAll('.tab-btn').forEach(function(b) {
+      var isActive = b.getAttribute('data-panel') === panelId;
+      b.classList.toggle('active', isActive);
+      b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      b.setAttribute('tabindex', isActive ? '0' : '-1');
+    });
+    document.querySelectorAll('.panel').forEach(function(p) {
+      p.classList.toggle('active', p.id === 'panel-' + panelId);
+    });
+    var prefs = loadPrefs();
+    prefs.lastTab = panelId;
+    savePrefs(prefs);
+  }
+
+  // ---------------------------------------------------------------
+  // CSS color getters (for SVG charts to respect theme)
+  // ---------------------------------------------------------------
+  function cssVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+  function themeColors() {
+    return {
+      text: cssVar('--text-primary') || '#1a1a2e',
+      textSec: cssVar('--text-secondary') || '#4a4a6a',
+      muted: cssVar('--text-muted') || '#8888a0',
+      accent: cssVar('--accent') || '#2563eb',
+      border: cssVar('--border-color') || '#e0e4ea',
+      success: cssVar('--success') || '#16a34a',
+      warning: cssVar('--warning') || '#d97706',
+      danger: cssVar('--danger') || '#dc2626',
+      bgSec: cssVar('--bg-secondary') || '#f4f6f9',
+    };
+  }
+
+  // ---------------------------------------------------------------
+  // Utility: escape HTML
+  // ---------------------------------------------------------------
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                    .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+                    .replace(/'/g,'&#39;');
+  }
+
+  // ---------------------------------------------------------------
+  // Tooltip helper
+  // ---------------------------------------------------------------
+  var tooltipEl = null;
+  function showTooltip(evt, html) {
+    if (!tooltipEl) tooltipEl = document.getElementById('tooltip');
+    tooltipEl.innerHTML = html;
+    tooltipEl.style.display = 'block';
+    var x = evt.pageX + 12;
+    var y = evt.pageY - 8;
+    if (x + 200 > window.innerWidth) x = evt.pageX - 180;
+    tooltipEl.style.left = x + 'px';
+    tooltipEl.style.top = y + 'px';
+  }
+  function hideTooltip() {
+    if (!tooltipEl) tooltipEl = document.getElementById('tooltip');
+    tooltipEl.style.display = 'none';
+  }
+
+  // ---------------------------------------------------------------
+  // Data loading
+  // ---------------------------------------------------------------
+  function loadData() {
+    var statusEl = document.getElementById('dataStatus');
+    statusEl.textContent = 'Loading...';
+
+    fetch('data/processed/dashboard_data.json')
+      .then(function(resp) {
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        return resp.json();
+      })
+      .then(function(data) {
+        DATA = data;
+        statusEl.textContent = data.n_trials + ' trials | ' + (data.generated_at || '');
+        renderAll();
+        // Restore last tab
+        var prefs = loadPrefs();
+        if (prefs.lastTab) switchTab(prefs.lastTab);
+      })
+      .catch(function(err) {
+        statusEl.textContent = 'Load failed';
+        document.getElementById('panel-predict').innerHTML =
+          '<div class="error-msg">Failed to load data: ' + esc(err.message) +
+          '<br>Run <code>python run_analysis.py</code> first to generate dashboard_data.json</div>';
+      });
+  }
+
+  // ---------------------------------------------------------------
+  // Render all panels
+  // ---------------------------------------------------------------
+  function renderAll() {
+    renderPredictPanel();
+    renderPopulationPanel();
+    renderRiskFactorsPanel();
+    renderSponsorPanel();
+    renderValidationPanel();
+  }
+
+  // ---------------------------------------------------------------
+  // PANEL 1: Predict
+  // ---------------------------------------------------------------
+  function renderPredictPanel() {
+    var btn = document.getElementById('predictBtn');
+    var input = document.getElementById('nctInput');
+
+    btn.addEventListener('click', doPrediction);
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') doPrediction();
+    });
+  }
+
+  function doPrediction() {
+    var nctId = document.getElementById('nctInput').value.trim().toUpperCase();
+    var resultEl = document.getElementById('predictResult');
+    var errorEl = document.getElementById('predictError');
+
+    errorEl.style.display = 'none';
+    resultEl.classList.add('hidden');
+
+    if (!nctId) {
+      errorEl.textContent = 'Please enter an NCT ID.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    if (!DATA || !DATA.population) {
+      errorEl.textContent = 'No data loaded.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    // Find trial in population data
+    var trial = null;
+    for (var i = 0; i < DATA.population.length; i++) {
+      if (DATA.population[i].nctId === nctId) {
+        trial = DATA.population[i];
+        break;
+      }
+    }
+
+    if (!trial) {
+      errorEl.textContent = 'Trial "' + esc(nctId) + '" not found in analyzed dataset.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    var prob = trial.prob_complete;
+    var risk, riskClass;
+    if (prob >= 0.7) {
+      risk = 'LOW';
+      riskClass = 'risk-low';
+    } else if (prob >= 0.4) {
+      risk = 'MEDIUM';
+      riskClass = 'risk-medium';
+    } else {
+      risk = 'HIGH';
+      riskClass = 'risk-high';
+    }
+
+    document.getElementById('predNctId').textContent = nctId;
+    document.getElementById('predProb').textContent = (prob * 100).toFixed(1) + '%';
+    var riskEl = document.getElementById('predRisk');
+    riskEl.innerHTML = '<span class="risk-badge ' + riskClass + '">' + risk + '</span>';
+
+    // Probability bar
+    var barColor;
+    if (prob >= 0.7) barColor = cssVar('--success');
+    else if (prob >= 0.4) barColor = cssVar('--warning');
+    else barColor = cssVar('--danger');
+
+    var barEl = document.getElementById('predBar');
+    barEl.style.width = (prob * 100).toFixed(1) + '%';
+    barEl.style.background = barColor;
+    document.getElementById('predBarLabel').textContent = (prob * 100).toFixed(1) + '%';
+
+    // Top 5 feature contributions
+    var featList = document.getElementById('predFeatures');
+    featList.innerHTML = '';
+    if (DATA.feature_importances) {
+      var top5 = DATA.feature_importances.slice(0, 5);
+      top5.forEach(function(fi) {
+        var li = document.createElement('li');
+        li.innerHTML = '<span class="feature-name">' + esc(fi.feature) + '</span>' +
+                       '<span class="feature-value">' + fi.importance.toFixed(4) + '</span>';
+        featList.appendChild(li);
+      });
+    }
+
+    resultEl.classList.remove('hidden');
+  }
+
+  // ---------------------------------------------------------------
+  // PANEL 2: Population View
+  // ---------------------------------------------------------------
+  function renderPopulationPanel() {
+    if (!DATA || !DATA.population) return;
+    var pop = DATA.population;
+
+    // Populate filter dropdowns
+    var conditions = {};
+    var phases = {};
+    pop.forEach(function(t) {
+      if (t.condition) conditions[t.condition] = true;
+      if (t.phase) phases[t.phase] = true;
+    });
+
+    var condSelect = document.getElementById('popCondFilter');
+    Object.keys(conditions).sort().forEach(function(c) {
+      var opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = c;
+      condSelect.appendChild(opt);
+    });
+
+    var phaseSelect = document.getElementById('popPhaseFilter');
+    Object.keys(phases).sort().forEach(function(p) {
+      var opt = document.createElement('option');
+      opt.value = p;
+      opt.textContent = p;
+      phaseSelect.appendChild(opt);
+    });
+
+    condSelect.addEventListener('change', updatePopulation);
+    phaseSelect.addEventListener('change', updatePopulation);
+    updatePopulation();
+  }
+
+  function updatePopulation() {
+    var condFilter = document.getElementById('popCondFilter').value;
+    var phaseFilter = document.getElementById('popPhaseFilter').value;
+    var pop = DATA.population;
+
+    var filtered = pop.filter(function(t) {
+      if (condFilter && t.condition !== condFilter) return false;
+      if (phaseFilter && t.phase !== phaseFilter) return false;
+      return true;
+    });
+
+    // Stats
+    var statsEl = document.getElementById('popStats');
+    var meanProb = 0;
+    var nCompleted = 0;
+    filtered.forEach(function(t) {
+      meanProb += t.prob_complete;
+      if (t.actual === 1) nCompleted++;
+    });
+    if (filtered.length > 0) meanProb /= filtered.length;
+
+    statsEl.innerHTML =
+      '<div class="stat-box"><div class="stat-value">' + filtered.length +
+      '</div><div class="stat-label">Trials</div></div>' +
+      '<div class="stat-box"><div class="stat-value">' + (meanProb * 100).toFixed(1) + '%' +
+      '</div><div class="stat-label">Mean Pred. Prob.</div></div>' +
+      '<div class="stat-box"><div class="stat-value">' + nCompleted +
+      '</div><div class="stat-label">Completed</div></div>' +
+      '<div class="stat-box"><div class="stat-value">' + (filtered.length - nCompleted) +
+      '</div><div class="stat-label">Failed</div></div>';
+
+    // Histogram
+    drawHistogram(filtered);
+  }
+
+  function drawHistogram(data) {
+    var container = document.getElementById('popHistogram');
+    if (data.length === 0) {
+      container.innerHTML = '<div class="loading-msg">No trials match filters.</div>';
+      return;
+    }
+
+    var nBins = 10;
+    var bins = new Array(nBins).fill(0);
+    data.forEach(function(t) {
+      var idx = Math.min(Math.floor(t.prob_complete * nBins), nBins - 1);
+      bins[idx]++;
+    });
+
+    var maxCount = Math.max.apply(null, bins);
+    if (maxCount === 0) maxCount = 1;
+
+    var W = 600, H = 280;
+    var ml = 50, mr = 20, mt = 20, mb = 50;
+    var plotW = W - ml - mr;
+    var plotH = H - mt - mb;
+    var barW = plotW / nBins - 4;
+    var c = themeColors();
+
+    var svg = '<svg width="' + W + '" height="' + H +
+              '" viewBox="0 0 ' + W + ' ' + H +
+              '" role="img" aria-label="Histogram of completion probabilities">';
+
+    // Y axis
+    for (var i = 0; i <= 4; i++) {
+      var yVal = Math.round(maxCount * i / 4);
+      var yPos = mt + plotH - (plotH * i / 4);
+      svg += '<line x1="' + ml + '" y1="' + yPos + '" x2="' + (W - mr) +
+             '" y2="' + yPos + '" stroke="' + c.border + '" stroke-width="1"/>';
+      svg += '<text x="' + (ml - 6) + '" y="' + (yPos + 4) +
+             '" text-anchor="end" font-size="11" fill="' + c.muted + '">' + yVal + '</text>';
+    }
+
+    // Bars
+    for (var b = 0; b < nBins; b++) {
+      var barH = (bins[b] / maxCount) * plotH;
+      var x = ml + b * (plotW / nBins) + 2;
+      var y = mt + plotH - barH;
+      svg += '<rect x="' + x + '" y="' + y + '" width="' + barW +
+             '" height="' + barH + '" fill="' + c.accent + '" rx="2"' +
+             ' opacity="0.85"' +
+             ' onmousemove="window.__eoTooltip(event,\'' + (b * 10) + '-' + ((b + 1) * 10) + '%: ' + bins[b] + ' trials\')"' +
+             ' onmouseout="window.__eoHideTooltip()"/>';
+      // X label
+      svg += '<text x="' + (x + barW / 2) + '" y="' + (H - mb + 16) +
+             '" text-anchor="middle" font-size="10" fill="' + c.muted + '">' +
+             (b * 10) + '%</text>';
+    }
+
+    // Axis labels
+    svg += '<text x="' + (ml + plotW / 2) + '" y="' + (H - 4) +
+           '" text-anchor="middle" font-size="12" fill="' + c.textSec +
+           '">Predicted Completion Probability</text>';
+    svg += '<text x="14" y="' + (mt + plotH / 2) +
+           '" text-anchor="middle" font-size="12" fill="' + c.textSec +
+           '" transform="rotate(-90,14,' + (mt + plotH / 2) + ')">Count</text>';
+
+    svg += '</svg>';
+    container.innerHTML = svg;
+  }
+
+  // ---------------------------------------------------------------
+  // PANEL 3: Risk Factors (Feature Importance)
+  // ---------------------------------------------------------------
+  function renderRiskFactorsPanel() {
+    if (!DATA || !DATA.feature_importances) return;
+    var importances = DATA.feature_importances.slice(0, 15);
+    if (importances.length === 0) return;
+
+    var maxImp = importances[0].importance;
+    if (maxImp === 0) maxImp = 1;
+
+    var W = 700, barH = 26, gap = 6;
+    var ml = 200, mr = 60, mt = 10;
+    var H = mt + importances.length * (barH + gap) + 10;
+    var plotW = W - ml - mr;
+    var c = themeColors();
+
+    var svg = '<svg width="' + W + '" height="' + H +
+              '" viewBox="0 0 ' + W + ' ' + H +
+              '" role="img" aria-label="Feature importance bar chart">';
+
+    importances.forEach(function(fi, idx) {
+      var y = mt + idx * (barH + gap);
+      var bw = (fi.importance / maxImp) * plotW;
+      if (bw < 2) bw = 2;
+
+      // Feature name
+      svg += '<text x="' + (ml - 8) + '" y="' + (y + barH / 2 + 4) +
+             '" text-anchor="end" font-size="12" fill="' + c.text +
+             '" font-family="Consolas,monospace">' + esc(fi.feature) + '</text>';
+
+      // Bar
+      var barColor = c.accent;
+      if (idx < 3) barColor = c.success;
+      else if (idx < 7) barColor = c.accent;
+      else barColor = c.muted;
+
+      svg += '<rect x="' + ml + '" y="' + y + '" width="' + bw +
+             '" height="' + barH + '" fill="' + barColor + '" rx="3" opacity="0.85"' +
+             ' onmousemove="window.__eoTooltip(event,\'' +
+             esc(fi.feature) + ': ' + fi.importance.toFixed(4) + '\')"' +
+             ' onmouseout="window.__eoHideTooltip()"/>';
+
+      // Value label
+      svg += '<text x="' + (ml + bw + 6) + '" y="' + (y + barH / 2 + 4) +
+             '" font-size="11" fill="' + c.textSec + '">' +
+             fi.importance.toFixed(4) + '</text>';
+    });
+
+    svg += '</svg>';
+    document.getElementById('importanceChart').innerHTML = svg;
+  }
+
+  // ---------------------------------------------------------------
+  // PANEL 4: Sponsor Report Card
+  // ---------------------------------------------------------------
+  function renderSponsorPanel() {
+    if (!DATA || !DATA.sponsor_report) return;
+    var report = DATA.sponsor_report;
+
+    if (report.length === 0) {
+      document.getElementById('sponsorTable').innerHTML =
+        '<div class="loading-msg">No sponsor data available.</div>';
+      return;
+    }
+
+    var html = '<table class="data-table">';
+    html += '<thead><tr>' +
+            '<th>Sponsor Class</th>' +
+            '<th>Trials</th>' +
+            '<th>Actual Completion Rate</th>' +
+            '<th>Model-Expected Rate</th>' +
+            '<th>Delta</th>' +
+            '</tr></thead><tbody>';
+
+    report.forEach(function(s) {
+      var deltaColor = '';
+      if (s.delta > 0.05) deltaColor = 'color:' + cssVar('--success');
+      else if (s.delta < -0.05) deltaColor = 'color:' + cssVar('--danger');
+      else deltaColor = 'color:' + cssVar('--warning');
+
+      html += '<tr>' +
+              '<td style="font-weight:600;">' + esc(s.sponsor) + '</td>' +
+              '<td>' + s.n_trials + '</td>' +
+              '<td>' + (s.actual_rate * 100).toFixed(1) + '%</td>' +
+              '<td>' + (s.expected_rate * 100).toFixed(1) + '%</td>' +
+              '<td style="font-weight:700;' + deltaColor + '">' +
+              (s.delta >= 0 ? '+' : '') + (s.delta * 100).toFixed(1) + '%</td>' +
+              '</tr>';
+    });
+
+    html += '</tbody></table>';
+    document.getElementById('sponsorTable').innerHTML = html;
+  }
+
+  // ---------------------------------------------------------------
+  // PANEL 5: Validation
+  // ---------------------------------------------------------------
+  function renderValidationPanel() {
+    if (!DATA) return;
+
+    // Stats
+    var statsEl = document.getElementById('valStats');
+    var m = DATA.metrics || {};
+    var cal = DATA.calibration || {};
+
+    var auc = m.auc;
+    var aucStr = (auc != null) ? auc.toFixed(4) : 'N/A';
+    var brier = cal.brier_score;
+    var brierStr = (brier != null) ? brier.toFixed(4) : 'N/A';
+    var accStr = m.accuracy != null ? (m.accuracy * 100).toFixed(1) + '%' : 'N/A';
+
+    statsEl.innerHTML =
+      '<div class="stat-box"><div class="stat-value">' + accStr +
+      '</div><div class="stat-label">CV Accuracy</div></div>' +
+      '<div class="stat-box"><div class="stat-value">' + aucStr +
+      '</div><div class="stat-label">AUC-ROC</div></div>' +
+      '<div class="stat-box"><div class="stat-value">' + brierStr +
+      '</div><div class="stat-label">Brier Score</div></div>' +
+      '<div class="stat-box"><div class="stat-value">' + (m.n_samples || 0) +
+      '</div><div class="stat-label">Samples</div></div>';
+
+    drawCalibrationPlot();
+    drawROCCurve();
+  }
+
+  function drawCalibrationPlot() {
+    var calData = DATA.calibration_curve;
+    if (!calData || calData.length === 0) {
+      document.getElementById('calibrationChart').innerHTML =
+        '<div class="loading-msg">No calibration data.</div>';
+      return;
+    }
+
+    var W = 360, H = 340;
+    var ml = 50, mr = 20, mt = 20, mb = 50;
+    var plotW = W - ml - mr;
+    var plotH = H - mt - mb;
+    var c = themeColors();
+
+    var svg = '<svg width="' + W + '" height="' + H +
+              '" viewBox="0 0 ' + W + ' ' + H +
+              '" role="img" aria-label="Calibration plot: predicted versus actual probability">';
+
+    // Grid lines
+    for (var i = 0; i <= 5; i++) {
+      var frac = i / 5;
+      var xPos = ml + frac * plotW;
+      var yPos = mt + plotH - frac * plotH;
+
+      svg += '<line x1="' + ml + '" y1="' + yPos + '" x2="' + (W - mr) +
+             '" y2="' + yPos + '" stroke="' + c.border + '" stroke-width="0.5"/>';
+      svg += '<line x1="' + xPos + '" y1="' + mt + '" x2="' + xPos +
+             '" y2="' + (mt + plotH) + '" stroke="' + c.border + '" stroke-width="0.5"/>';
+      svg += '<text x="' + (ml - 6) + '" y="' + (yPos + 4) +
+             '" text-anchor="end" font-size="10" fill="' + c.muted + '">' +
+             (frac * 100).toFixed(0) + '%</text>';
+      svg += '<text x="' + xPos + '" y="' + (H - mb + 16) +
+             '" text-anchor="middle" font-size="10" fill="' + c.muted + '">' +
+             (frac * 100).toFixed(0) + '%</text>';
+    }
+
+    // Diagonal (perfect calibration)
+    svg += '<line x1="' + ml + '" y1="' + (mt + plotH) + '" x2="' + (ml + plotW) +
+           '" y2="' + mt + '" stroke="' + c.muted + '" stroke-width="1" stroke-dasharray="4,4"/>';
+
+    // Calibration line
+    var pathD = '';
+    calData.forEach(function(pt, idx) {
+      var x = ml + pt.mean_predicted * plotW;
+      var y = mt + plotH - pt.mean_actual * plotH;
+      pathD += (idx === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
+    });
+    svg += '<path d="' + pathD + '" fill="none" stroke="' + c.accent +
+           '" stroke-width="2"/>';
+
+    // Points
+    calData.forEach(function(pt) {
+      var x = ml + pt.mean_predicted * plotW;
+      var y = mt + plotH - pt.mean_actual * plotH;
+      var r = Math.min(Math.max(Math.sqrt(pt.count) * 1.5, 3), 10);
+      svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) +
+             '" r="' + r.toFixed(1) + '" fill="' + c.accent + '" opacity="0.7"' +
+             ' onmousemove="window.__eoTooltip(event,\'Pred: ' +
+             (pt.mean_predicted * 100).toFixed(1) + '%, Actual: ' +
+             (pt.mean_actual * 100).toFixed(1) + '%, n=' + pt.count + '\')"' +
+             ' onmouseout="window.__eoHideTooltip()"/>';
+    });
+
+    // Axis labels
+    svg += '<text x="' + (ml + plotW / 2) + '" y="' + (H - 4) +
+           '" text-anchor="middle" font-size="12" fill="' + c.textSec +
+           '">Mean Predicted Probability</text>';
+    svg += '<text x="14" y="' + (mt + plotH / 2) +
+           '" text-anchor="middle" font-size="12" fill="' + c.textSec +
+           '" transform="rotate(-90,14,' + (mt + plotH / 2) + ')">Mean Actual Frequency</text>';
+
+    // Border
+    svg += '<rect x="' + ml + '" y="' + mt + '" width="' + plotW +
+           '" height="' + plotH + '" fill="none" stroke="' + c.border + '" stroke-width="1"/>';
+
+    svg += '</svg>';
+    document.getElementById('calibrationChart').innerHTML = svg;
+  }
+
+  function drawROCCurve() {
+    var rocData = DATA.roc_curve;
+    if (!rocData || rocData.length === 0) {
+      document.getElementById('rocChart').innerHTML =
+        '<div class="loading-msg">No ROC data.</div>';
+      return;
+    }
+
+    var W = 360, H = 340;
+    var ml = 50, mr = 20, mt = 20, mb = 50;
+    var plotW = W - ml - mr;
+    var plotH = H - mt - mb;
+    var c = themeColors();
+
+    var svg = '<svg width="' + W + '" height="' + H +
+              '" viewBox="0 0 ' + W + ' ' + H +
+              '" role="img" aria-label="ROC curve">';
+
+    // Grid
+    for (var i = 0; i <= 5; i++) {
+      var frac = i / 5;
+      var xPos = ml + frac * plotW;
+      var yPos = mt + plotH - frac * plotH;
+      svg += '<line x1="' + ml + '" y1="' + yPos + '" x2="' + (W - mr) +
+             '" y2="' + yPos + '" stroke="' + c.border + '" stroke-width="0.5"/>';
+      svg += '<line x1="' + xPos + '" y1="' + mt + '" x2="' + xPos +
+             '" y2="' + (mt + plotH) + '" stroke="' + c.border + '" stroke-width="0.5"/>';
+      svg += '<text x="' + (ml - 6) + '" y="' + (yPos + 4) +
+             '" text-anchor="end" font-size="10" fill="' + c.muted + '">' +
+             frac.toFixed(1) + '</text>';
+      svg += '<text x="' + xPos + '" y="' + (H - mb + 16) +
+             '" text-anchor="middle" font-size="10" fill="' + c.muted + '">' +
+             frac.toFixed(1) + '</text>';
+    }
+
+    // Diagonal (random classifier)
+    svg += '<line x1="' + ml + '" y1="' + (mt + plotH) + '" x2="' + (ml + plotW) +
+           '" y2="' + mt + '" stroke="' + c.muted + '" stroke-width="1" stroke-dasharray="4,4"/>';
+
+    // ROC curve (sort by FPR ascending for proper drawing)
+    var sorted = rocData.slice().sort(function(a, b) { return a.fpr - b.fpr; });
+    var pathD = '';
+    sorted.forEach(function(pt, idx) {
+      var x = ml + pt.fpr * plotW;
+      var y = mt + plotH - pt.tpr * plotH;
+      pathD += (idx === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
+    });
+
+    // Fill under curve
+    var fillD = pathD +
+                'L' + (ml + plotW).toFixed(1) + ',' + (mt + plotH).toFixed(1) +
+                'L' + ml.toFixed(1) + ',' + (mt + plotH).toFixed(1) + 'Z';
+    svg += '<path d="' + fillD + '" fill="' + c.accent + '" opacity="0.1"/>';
+    svg += '<path d="' + pathD + '" fill="none" stroke="' + c.accent +
+           '" stroke-width="2.5"/>';
+
+    // AUC label
+    var auc = DATA.metrics ? DATA.metrics.auc : null;
+    if (auc != null) {
+      svg += '<text x="' + (ml + plotW - 8) + '" y="' + (mt + plotH - 12) +
+             '" text-anchor="end" font-size="13" font-weight="600" fill="' + c.accent +
+             '">AUC = ' + auc.toFixed(4) + '</text>';
+    }
+
+    // Axis labels
+    svg += '<text x="' + (ml + plotW / 2) + '" y="' + (H - 4) +
+           '" text-anchor="middle" font-size="12" fill="' + c.textSec +
+           '">False Positive Rate</text>';
+    svg += '<text x="14" y="' + (mt + plotH / 2) +
+           '" text-anchor="middle" font-size="12" fill="' + c.textSec +
+           '" transform="rotate(-90,14,' + (mt + plotH / 2) + ')">True Positive Rate</text>';
+
+    // Border
+    svg += '<rect x="' + ml + '" y="' + mt + '" width="' + plotW +
+           '" height="' + plotH + '" fill="none" stroke="' + c.border + '" stroke-width="1"/>';
+
+    svg += '</svg>';
+    document.getElementById('rocChart').innerHTML = svg;
+  }
+
+  // ---------------------------------------------------------------
+  // Global tooltip handlers (called from inline SVG events)
+  // ---------------------------------------------------------------
+  window.__eoTooltip = showTooltip;
+  window.__eoHideTooltip = hideTooltip;
+
+  // ---------------------------------------------------------------
+  // Init
+  // ---------------------------------------------------------------
+  function init() {
+    initDarkMode();
+    initTabs();
+    loadData();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
+</script>
+</body>
+</html>
